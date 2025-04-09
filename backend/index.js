@@ -1,14 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
-const requireLogin = require('./middleware/auth');
 
 const app = express();
 const PORT = 5000;
+const MongoURI = "mongodb+srv://liammivatt:Galaxytheo2020@healthtracker.vlneqzh.mongodb.net/HealthTracker?retryWrites=true&w=majority"
 
 // Middleware
 app.use(cors({
@@ -20,18 +20,26 @@ app.use(cors({
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://liammivatt:Galaxytheo2020@healthtracker.vlneqzh.mongodb.net/HealthTracker?retryWrites=true&w=majority")
+mongoose.connect(MongoURI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+// Create MongoDB session store
+const store = new MongoStore({
+  uri: MongoURI,
+  collection: 'sessions'
+});
+
+// Session config
 app.use(session({
   secret: 'galaxy',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: "mongodb+srv://liammivatt:Galaxytheo2020@healthtracker.vlneqzh.mongodb.net/?retryWrites=true&w=majority&appName=HealthTracker"}),
+  store: store,
   cookie: { httpOnly: true, secure: false, maxAge: 1000 * 60 * 60 }
 }));
 
+// Register new user
 app.post('/api/register', async (req, res) => {
   const { firstName, lastName, email, password, height, weight } = req.body;
 
@@ -44,31 +52,76 @@ app.post('/api/register', async (req, res) => {
   const user = new User({ firstName, lastName, email, password: hashedPassword, height, weight, bmi });
   await user.save();
 
-  req.session.userId = user._id;
   res.json({ message: 'User registered', userId: user._id });
 });
 
+// Login and create session
 app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
   
-    if (!user) return res.status(400).json({ message: 'Incorrect email or password' });
+  if (!user) return res.status(400).json({ message: 'Incorrect email or password' });
   
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ message: 'Incorrect email or password' });
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(400).json({ message: 'Incorrect email or password' });
   
-    req.session.userId = user._id;
-    res.json({ message: 'Logged in' });
+  req.session.userId = user._id;
+
+  res.json({ message: 'Logged in' });
 });
 
+// Logout and remove current session (protects the main page)
 app.post('/api/logout', (req, res) => {
-    req.session.destroy(() => {
-      res.clearCookie('connect.sid');
-      res.json({ message: 'Logged out' });  
-    });
+
+  req.session.destroy((err) => {
+      if (err) {
+          console.error('Error destroying session:', err);
+          return res.status(500).json({ message: 'Failed to log out' });
+      }
+      res.clearCookie('connect.sid', {
+          path: '/',
+          httpOnly: true,
+          secure: false,
+          maxAge: 0
+      });
+      res.status(200).json({ message: 'Logged out successfully' });
+  });
+});
+
+// TO-DO: Fix profile update
+app.post('/api/update-profile', async (req, res) => {
+
+  const { email, height, weight } = req.body;
+  const user = await User.findById(req.session.userId);
+
+  user.email = email;
+  user.height = height;
+  user.weight = weight;
+
+  await user.save()
+
+  res.status(200).json({ message: 'Profile updated' });
+
+});
+
+// Authorise session
+app.get('/api/check-auth', (req, res) => {
+  if (req.session && req.session.userId) {
+    res.status(200).json({ authenticated: true });
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+// Get user data
+app.get('/api/user', async (req, res) => {
+  
+  const user = await User.findById(req.session.userId);
+  res.json({ firstName: user.firstName, lastName: user.lastName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi });
+
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port: ${PORT}`);
+  console.log(`Server running on port: ${PORT}`);
 });
   

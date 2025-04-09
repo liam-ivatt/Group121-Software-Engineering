@@ -29,7 +29,7 @@ async function handleSubmit() {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include', // To send cookies (session) with the request
+      credentials: 'include',
       body: JSON.stringify({ email: email.value, password: password.value })
     });
 
@@ -37,7 +37,6 @@ async function handleSubmit() {
       const errorData = await res.json();
       errMsg.value = errorData.message;
     } else {
-      // Redirect to the dashboard after successful login
       router.push('/');
     }
   } catch (error) {
@@ -49,6 +48,23 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
+
+button {
+  background-color: white;
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+  color: black;
+  padding: 15px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 15px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #eee;
+}
 
 .login {
   text-align: center;

@@ -10,6 +10,7 @@
             <input type="password" required placeholder="password" v-model="password">
             <br>
             <p v-if="errMsg" style="color: red;">{{ errMsg }}</p>
+            <p v-if="msg" style="color: green;">{{ msg }}</p>
             <button @click="register">Sign up</button>
         </form>
     </div>
@@ -28,6 +29,7 @@ const weight = ref("");
 const email = ref("");
 const password = ref("");
 const errMsg = ref("");
+const msg = ref("");
 
 async function handleSubmit() {
   try {
@@ -52,7 +54,7 @@ async function handleSubmit() {
       errMsg.value = errorData.message;
     } else {
       // Redirect to dashboard after successful registration
-      router.push('/');
+      msg.value = "Registration successful! Please log in.";
     }
   } catch (error) {
     console.error('Registration error:', error);
@@ -63,6 +65,23 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
+
+button {
+  background-color: white;
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+  color: black;
+  padding: 15px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 15px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #eee;
+}
 
 .sign {
   text-align: center;

@@ -1,12 +1,70 @@
 <template>
-    <div>
+    <Navigation />
+    <div class="dashboard">
         <h1>Dashboard</h1>
+        <p>Your BMI is currently {{ bmi }}</p>
+    </div>
+    <div @open="showModal">
+        <Modal />
     </div>
 </template>
 
 <script>
+import Navigation from '../components/Navigation.vue'
+import Modal from '../components/Modal.vue'
+
+export default {
+ components: {
+    Navigation
+ },
+ methods: {
+        toggleModal() {
+            this.showModal = !this.showModal
+        },
+        async getUserData() {
+            try {
+                const response = await fetch('http://localhost:5000/api/user', {
+                    method: 'GET',
+                    credentials: 'include',  
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    this.bmi = data.bmi.toFixed(2);
+                } else {
+                    console.error('Error fetching user data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        },
+
+    },
+  data() {
+    return {
+      showModal: false,
+      bmi: ""
+    }
+  },
+    created() {
+        this.getUserData();
+    },
+}
+
 </script>
 
-<style>
+<style scoped>
+
+.dashboard {
+    padding: 20px;
+    background-color: white;
+    width: 50%;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.dashboard h1 {
+    text-align: left;
+}
 
 </style>

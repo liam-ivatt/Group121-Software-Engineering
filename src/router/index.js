@@ -23,4 +23,25 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    try {
+      const res = await fetch('http://localhost:5000/api/check-auth', {
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        next(); 
+      } else {
+        next('/welcome'); 
+      }
+    } catch (err) {
+      console.error('Auth check failed:', err);
+      next('/welcome');
+    }
+  } else {
+    next();
+  }
+});
+
 export default router
