@@ -2,17 +2,14 @@
 
 ## Project setup
 ```
-npm install
+npm install - installs all packages required
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
+npm run dev - runs vue server and node server concurrently.
+npm run serve - run from default path, runs vue frontend independently
+node index.js - run from backend path, runs backend server independently
 ```
 
 ### Customize configuration
