@@ -4,6 +4,7 @@
         <form @submit.prevent="handleSubmit">
             <input type="text" required placeholder="first name" v-model="firstname">
             <input type="text" required placeholder="last name" v-model="lastname">
+            <input type="text" required placeholder="user name" v-model="username">
             <input type="number" required placeholder="height" v-model="height">
             <input type="number" required placeholder="weight" v-model="weight">
             <input type="email" required placeholder="email" v-model="email">
@@ -18,12 +19,10 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
 
 const firstname = ref("");
 const lastname = ref("");
+const username = ref("");
 const height = ref("");
 const weight = ref("");
 const email = ref("");
@@ -42,6 +41,7 @@ async function handleSubmit() {
       body: JSON.stringify({
         firstName: firstname.value,
         lastName: lastname.value,
+        userName: username.value,
         email: email.value,
         password: password.value,
         height: height.value,
@@ -53,7 +53,7 @@ async function handleSubmit() {
       const errorData = await res.json();
       errMsg.value = errorData.message;
     } else {
-      // Redirect to dashboard after successful registration
+      errMsg.value = ""; 
       msg.value = "Registration successful! Please log in.";
     }
   } catch (error) {

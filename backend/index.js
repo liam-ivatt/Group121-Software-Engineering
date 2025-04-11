@@ -41,15 +41,24 @@ app.use(session({
 
 // Register new user
 app.post('/api/register', async (req, res) => {
-  const { firstName, lastName, email, password, height, weight } = req.body;
+  const { firstName, lastName, userName, email, password, height, weight } = req.body;
 
-  const existing = await User.findOne({ email });
-  if (existing) return res.status(400).json({ message: 'Email already in use, please choose another' });
+  const existingEmail = await User.findOne({ email });
+  const existingUserName = await User.findOne({ userName });
+
+  if (existingEmail && existingUserName) {
+    return res.status(400).json({ message: 'Email and user name already in use, please choose another' });
+  } else if (existingUserName) {
+    return res.status(400).json({ message: 'User name already in use, please choose another' });
+  } else if (existingEmail) {
+    return res.status(400).json({ message: 'Email already in use, please choose another' });
+  }
+
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const bmi = weight / ((height / 100) ** 2);
 
-  const user = new User({ firstName, lastName, email, password: hashedPassword, height, weight, bmi });
+  const user = new User({ firstName, lastName, userName, email, password: hashedPassword, height, weight, bmi });
   await user.save();
 
   res.json({ message: 'User registered', userId: user._id });
@@ -117,7 +126,7 @@ app.get('/api/check-auth', (req, res) => {
 app.get('/api/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
-  res.json({ firstName: user.firstName, lastName: user.lastName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi });
+  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi });
 
 });
 
