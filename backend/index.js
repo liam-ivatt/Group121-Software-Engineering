@@ -40,7 +40,7 @@ app.use(session({
 }));
 
 // Register new user
-app.post('/api/register', async (req, res) => {
+app.post('/register', async (req, res) => {
   const { firstName, lastName, userName, email, password, height, weight } = req.body;
 
   const existingEmail = await User.findOne({ email });
@@ -65,7 +65,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Login and create session
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   
@@ -80,7 +80,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Logout and remove current session (protects the main page)
-app.post('/api/logout', (req, res) => {
+app.post('/logout', (req, res) => {
 
   req.session.destroy((err) => {
       if (err) {
@@ -98,7 +98,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // TO-DO: Fix profile update
-app.post('/api/update-profile', async (req, res) => {
+app.post('/update-profile', async (req, res) => {
 
   const { email, height, weight } = req.body;
   const user = await User.findById(req.session.userId);
@@ -114,7 +114,7 @@ app.post('/api/update-profile', async (req, res) => {
 });
 
 // Authorise session
-app.get('/api/check-auth', (req, res) => {
+app.get('/check-auth', (req, res) => {
   if (req.session && req.session.userId) {
     res.status(200).json({ authenticated: true });
   } else {
@@ -123,7 +123,7 @@ app.get('/api/check-auth', (req, res) => {
 });
 
 // Get user data
-app.get('/api/user', async (req, res) => {
+app.get('/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
   res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi });

@@ -2,16 +2,16 @@
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
             <form>
-                <h1>Edit Profile</h1>
+                <h1>Set a new goal</h1>
                 <div class="form-group">
-                    <label>Email:</label>
-                    <input type="email">
+                    <label>Name</label>
+                    <input type="text">
                 </div>  
                 <div class="form-group">
-                    <label>Height (CM):</label>
+                    <label>Goal Weight (KG):</label>
                     <input type="number">
-                    <label>Weight (KG):</label>
-                    <input type="number">
+                    <label>Acheivement Date:</label>
+                    <input type="date">
                 </div>
             <div>
                 <p v-if="errData" >{{errData}}</p>
@@ -35,7 +35,6 @@ async function handleSubmit() {
     event.preventDefault();
 
     try {
-        console.log('test');
         const res = await fetch('http://localhost:5000/update-profile', {
             method: 'POST',
             headers: {

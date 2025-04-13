@@ -26,7 +26,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     try {
-      const res = await fetch('http://localhost:5000/api/check-auth', {
+      const res = await fetch('http://localhost:5000/check-auth', {
         credentials: 'include'
       });
 

@@ -31,7 +31,7 @@ export default {
             this.showModal = !this.showModal
         },
         async handleLogout() {
-            const res = await fetch('http://localhost:5000/api/logout', { 
+            const res = await fetch('http://localhost:5000/logout', { 
                 method: 'POST',
                 credentials: 'include'
              });
@@ -41,7 +41,7 @@ export default {
         },
         async getUserData() {
             try {
-                const response = await fetch('http://localhost:5000/api/user', {
+                const response = await fetch('http://localhost:5000/user', {
                     method: 'GET',
                     credentials: 'include',  
                 });

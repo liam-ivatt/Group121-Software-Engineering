@@ -7,15 +7,17 @@
     <div @open="showModal">
         <Modal />
     </div>
+    <Goals />
 </template>
 
 <script>
 import Navigation from '../components/Navigation.vue'
-import Modal from '../components/Modal.vue'
+import Goals from '../components/Goal.vue'
 
 export default {
  components: {
-    Navigation
+    Navigation,
+    Goals,
  },
  methods: {
         toggleModal() {
@@ -23,7 +25,7 @@ export default {
         },
         async getUserData() {
             try {
-                const response = await fetch('http://localhost:5000/api/user', {
+                const response = await fetch('http://localhost:5000/user', {
                     method: 'GET',
                     credentials: 'include',  
                 });
@@ -59,6 +61,7 @@ export default {
     background-color: white;
     width: 50%;
     margin: 0 auto;
+    margin-bottom: 20px;;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
