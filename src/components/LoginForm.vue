@@ -2,8 +2,8 @@
     <div class="login">
         <h2>Log in</h2>
         <form @submit.prevent="handleSubmit">
-            <input type="email" required placeholder="email" v-model="email">
-            <input type="password" required placeholder="password" v-model="password">
+            <input type="email" required placeholder="Email" v-model="email">
+            <input type="password" required placeholder="Password" v-model="password">
             <br>
             <p v-if="errMsg" style="color: red">{{ errMsg }}</p>
             <button @click="login">Log in</button>

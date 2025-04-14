@@ -2,13 +2,13 @@
     <div class="sign">
         <h2>Sign up</h2>
         <form @submit.prevent="handleSubmit">
-            <input type="text" required placeholder="first name" v-model="firstname">
-            <input type="text" required placeholder="last name" v-model="lastname">
-            <input type="text" required placeholder="user name" v-model="username">
-            <input type="number" required placeholder="height" v-model="height">
-            <input type="number" required placeholder="weight" v-model="weight">
-            <input type="email" required placeholder="email" v-model="email">
-            <input type="password" required placeholder="password" v-model="password">
+            <input type="text" required placeholder="First name" v-model="firstname">
+            <input type="text" required placeholder="Last name" v-model="lastname">
+            <input type="text" required placeholder="User name" v-model="username">
+            <input type="number" required placeholder="Height (cm)" v-model="height">
+            <input type="number" required placeholder="Weight (kg)" v-model="weight">
+            <input type="email" required placeholder="Email" v-model="email">
+            <input type="password" required placeholder="Password" v-model="password">
             <br>
             <p v-if="errMsg" style="color: red;">{{ errMsg }}</p>
             <p v-if="msg" style="color: green;">{{ msg }}</p>
