@@ -8,16 +8,19 @@
         <Modal />
     </div>
     <Goals />
+    <Foods />
 </template>
 
 <script>
 import Navigation from '../components/Navigation.vue'
 import Goals from '../components/Goal.vue'
+import Foods from '../components/Food.vue'
 
 export default {
  components: {
     Navigation,
     Goals,
+    Foods,
  },
  methods: {
         toggleModal() {
