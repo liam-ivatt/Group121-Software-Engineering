@@ -1,139 +1,146 @@
-<template>
-    <div class="backdrop" @click.self="closeModal">
-        <div class="modal">
-            <form>
-                <h1>Edit Profile</h1>
-                <div class="form-group">
-                    <label>Email:</label>
-                    <input type="email">
-                </div>  
-                <div class="form-group">
-                    <label>Height (CM):</label>
-                    <input type="number">
-                    <label>Weight (KG):</label>
-                    <input type="number">
+    <template>
+        <div class="backdrop" @click.self="closeModal">
+            <div class="modal">
+                <form>
+                    <h1>Edit Profile</h1>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" v-model="email">
+                    </div>  
+                    <div class="form-group">
+                        <label>Height (CM):</label>
+                        <input type="number" v-model="height">
+                        <label>Weight (KG):</label>
+                        <input type="number" v-model="weight">
+                    </div>
+                <div>
+                    <p v-if="errData" >{{errData}}</p>
+                    <button @click="handleSubmit">Submit</button>
                 </div>
-            <div>
-                <p v-if="errData" >{{errData}}</p>
-                <button @click="handleSubmit">Submit</button>
+                </form>
             </div>
-            </form>
         </div>
-    </div>
-</template>
+    </template>
 
-<script>
-import { ref } from 'vue'
 
-const errData = ref("");
-const email = ref("");
-const height = ref("");
-const weight = ref("");
 
-async function handleSubmit() {
+    <script>
+    import { ref } from 'vue'
 
-    event.preventDefault();
+    const errData = ref("");
 
-    try {
-        console.log('test');
-        const res = await fetch('http://localhost:5000/update-profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    export default {
+        data() {
+            return {
+                errData,
+                email: '',
+                height: '',
+                weight: '',
+            }
+        },
+
+        methods: {
+            closeModal() {
+                this.$emit('close')
             },
-            credentials: 'include',
-            body: JSON.stringify({ email: email.value, height: height.value, weight: weight.value })
-        });
 
-        if (!res.ok) {
-            const errorData = await res.json();
-            errData.value = errorData.message;
-        } else {  
-        }
-    } catch (error) {
-        console.error('Profile update error:', error);
-        alert('An error occurred during profile update.');
+            async handleSubmit(event) {
+
+            event.preventDefault();
+
+            try {
+                const res = await fetch('http://localhost:5000/update-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: this.email, height: this.height, weight: this.weight })
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    errData.value = errorData.message;
+                } else {  
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                alert('An error occurred during profile update.');
+            }
+            }
+                }
+            }
+
+    </script>
+
+    <style scoped>
+
+    .modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-height: 90vh;
+        overflow-y: auto;
+        width: 400px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+    }   
+    .backdrop {
+        top: 0;
+        position: fixed;
+        background: rgba(0,0,0,0.5);
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
     }
-}
 
-export default {
-    methods: {
-        closeModal() {
-            this.$emit('close')
-        }
+    form {
+    width: 300px;
+    margin: 20px auto;
     }
-}
 
-</script>
+    label {
+    display: block;
+    margin: 20px 0 10px;
+    }
 
-<style scoped>
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-height: 90vh;
-    overflow-y: auto;
-    width: 400px;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-}   
-.backdrop {
-    top: 0;
-    position: fixed;
-    background: rgba(0,0,0,0.5);
-    inset: 0;
+    input {
     width: 100%;
-    height: 100%;
-    border-radius: 0;
-}
-
-form {
-  width: 300px;
-  margin: 20px auto;
-}
-
-label {
-  display: block;
-  margin: 20px 0 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  outline: none;
-  margin: 10px auto;
-  
-}
-
-form h1 {
-    display: block;
-    text-align: center;
-    padding-bottom: 10px;
-}   
-
-form button {
-    background-color: white;
-    border: 1px solid #c1c1c1;
+    padding: 10px;
     border-radius: 10px;
-    padding: 15px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 15px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    margin: 20px auto 0;
-    display: block;
-}
+    border: 1px solid #eee;
+    outline: none;
+    margin: 10px auto;
+    
+    }
 
-form button:hover {
-    background-color: #eee;
-}
+    form h1 {
+        display: block;
+        text-align: center;
+        padding-bottom: 10px;
+    }   
+
+    form button {
+        background-color: white;
+        border: 1px solid #c1c1c1;
+        border-radius: 10px;
+        padding: 15px 20px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 15px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        margin: 20px auto 0;
+        display: block;
+    }
+
+    form button:hover {
+        background-color: #eee;
+    }
 
 
-</style>
+    </style>
 

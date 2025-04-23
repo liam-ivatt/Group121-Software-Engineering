@@ -1,26 +1,29 @@
 <template>
     <Navigation />
+    <Notification v-if="showNotification"/>
     <div class="dashboard">
         <h1>Dashboard</h1>
         <p>Your BMI is currently {{ bmi }}</p>
     </div>
-    <div @open="showModal">
-        <Modal />
-    </div>
     <Goals />
     <Foods />
+    <Exercises />
 </template>
 
 <script>
 import Navigation from '../components/Navigation.vue'
 import Goals from '../components/Goal.vue'
 import Foods from '../components/Food.vue'
+import Exercises from '../components/Exercise.vue'
+import Notification from '@/components/Notification.vue'
 
 export default {
  components: {
     Navigation,
     Goals,
     Foods,
+    Exercises,
+    Notification,
  },
  methods: {
         toggleModal() {
@@ -42,16 +45,32 @@ export default {
                 console.error('Error:', error);
             }
         },
+        checkDay() {
+            const today = new Date();
+            const day = today.getDay();
+            const firstDay = 1;
+
+            if (day === firstDay) {
+                this.showNotification = true;
+            } else {
+                this.showNotification = false;
+            }
+
+        }
 
     },
   data() {
     return {
       showModal: false,
+      showNotification: false,
       bmi: ""
     }
   },
     created() {
         this.getUserData();
+    },
+    mounted() {
+        this.checkDay();
     },
 }
 

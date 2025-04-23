@@ -103,9 +103,14 @@ app.post('/update-profile', async (req, res) => {
   const { email, height, weight } = req.body;
   const user = await User.findById(req.session.userId);
 
-  user.email = email;
-  user.height = height;
-  user.weight = weight;
+  user.email = email || user.email;
+  user.height = height || user.height;
+  user.weight = weight || user.weight;
+
+  // Recalculate BMI
+  if (height && weight) {
+    user.bmi = user.weight / ((user.height / 100) ** 2);
+  }
 
   await user.save()
 
@@ -133,4 +138,6 @@ app.get('/user', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
+
+
   

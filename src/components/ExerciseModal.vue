@@ -2,7 +2,7 @@
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
             <form>
-                <h1>Add to your Diet Log</h1>
+                <h1>Add to your Exercise Log</h1>
                 <div class="food-list">
                     <div class="food-item">
                         <ul>
@@ -24,8 +24,6 @@ export default {
 
     data() {
         return {
-            foodItems: [
-            ],
         }
     },
     methods: {
