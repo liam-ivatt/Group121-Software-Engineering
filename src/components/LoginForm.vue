@@ -9,41 +9,44 @@
             <button @click="login">Log in</button>
         </form>
     </div>
-
-    
 </template>
 
-<script setup>
-import { ref } from "vue";
-import { useRouter } from 'vue-router';
+<script>
 
-const email = ref("");
-const password = ref("");
-const router = useRouter();
-const errMsg = ref("");
+export default {
+  data() {
+    return {
+      email:  '',
+      password: '',
+      errMsg: '',
+    };
+  },
 
-async function handleSubmit() {
-  try {
-    const res = await fetch('http://localhost:5000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email: email.value, password: password.value })
-    });
+    methods: {
+      async handleSubmit() {
+        try {
+          const res = await fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email: this.email, password: this.password })
+          });
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      errMsg.value = errorData.message;
-    } else {
-      router.push('/');
+        if (!res.ok) {
+          const errorData = await res.json();
+          this.errMsg = errorData.message;
+        } else {
+          this.$router.push('/');
+        }
+        } catch (error) {
+          console.error('Login error:', error);
+          alert('An error occurred during login.');
+        }
+      }
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    alert('An error occurred during login.');
-  }
-}
+};
 
 </script>
 

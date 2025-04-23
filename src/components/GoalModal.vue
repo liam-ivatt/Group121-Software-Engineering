@@ -23,39 +23,16 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-
-const errData = ref("");
-const email = ref("");
-const height = ref("");
-const weight = ref("");
-
-async function handleSubmit() {
-
-    event.preventDefault();
-
-    try {
-        const res = await fetch('http://localhost:5000/update-profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({ email: email.value, height: height.value, weight: weight.value })
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            errData.value = errorData.message;
-        } else {  
-        }
-    } catch (error) {
-        console.error('Profile update error:', error);
-        alert('An error occurred during profile update.');
-    }
-}
 
 export default {
+    data() {
+        return {
+            errData: '',
+            goalName: '',
+            goalWeight: '',
+            achDate: ''
+        }
+    },
     methods: {
         closeModal() {
             this.$emit('close')

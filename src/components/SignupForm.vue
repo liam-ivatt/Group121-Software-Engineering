@@ -17,50 +17,58 @@
     </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
+<script>
 
-const firstname = ref("");
-const lastname = ref("");
-const username = ref("");
-const height = ref("");
-const weight = ref("");
-const email = ref("");
-const password = ref("");
-const errMsg = ref("");
-const msg = ref("");
+export default {
+  data() {
+    return {
+      firstname:  '',
+      lastname:  '',
+      username:  '',
+      email:  '',
+      password:  '',
+      height:  '',
+      weight:  '',
+      errMsg:  '',
+      msg: ''
+    };
+  },
 
-async function handleSubmit() {
-  try {
-    const res = await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include', // Send session cookie with request
-      body: JSON.stringify({
-        firstName: firstname.value,
-        lastName: lastname.value,
-        userName: username.value,
-        email: email.value,
-        password: password.value,
-        height: height.value,
-        weight: weight.value
-      })
-    });
+  methods: {
+    async handleSubmit() {
+      try {
+        const res = await fetch('http://localhost:5000/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include', // Send session cookie with request
+          body: JSON.stringify({
+            firstName: this.firstname,
+            lastName: this.lastname,
+            userName: this.username,
+            email: this.email,
+            password: this.password,
+            height: this.height,
+            weight: this.weight
+          })
+        });
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      errMsg.value = errorData.message;
-    } else {
-      errMsg.value = ""; 
-      msg.value = "Registration successful! Please log in.";
+        if (!res.ok) {
+          const errorData = await res.json();
+          this.errMsg = errorData.message;
+        } else {
+          this.errMsg = ""; 
+          this.msg = "Registration successful! Please log in.";
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('An error occurred during registration.');
+      }
     }
-  } catch (error) {
-    console.error('Registration error:', error);
-    alert('An error occurred during registration.');
   }
 }
+
 
 </script>
 

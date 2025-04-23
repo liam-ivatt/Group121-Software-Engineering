@@ -25,14 +25,10 @@
 
 
     <script>
-    import { ref } from 'vue'
-
-    const errData = ref("");
-
     export default {
         data() {
             return {
-                errData,
+                errData: '',
                 email: '',
                 height: '',
                 weight: '',
@@ -60,7 +56,7 @@
 
                 if (!res.ok) {
                     const errorData = await res.json();
-                    errData.value = errorData.message;
+                    this.errData = errorData.message;
                 } else {  
                 }
             } catch (error) {
