@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+const WeightEntrySchema = new mongoose.Schema({
+    weight: Number,
+    date: { type: Date, default: Date.now }
+});
+
+
 const UserSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
@@ -8,7 +14,8 @@ const UserSchema = new mongoose.Schema({
   password: String,
   height: Number,
   weight: Number,
-  bmi: Number
+  bmi: Number,
+  weightHistory: [WeightEntrySchema],
 });
 
 module.exports = mongoose.model('User', UserSchema);

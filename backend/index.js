@@ -54,11 +54,11 @@ app.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'Email already in use, please choose another' });
   }
 
-
   const hashedPassword = await bcrypt.hash(password, 10);
   const bmi = weight / ((height / 100) ** 2);
 
-  const user = new User({ firstName, lastName, userName, email, password: hashedPassword, height, weight, bmi });
+  const user = new User({ firstName, lastName, userName, email, password: hashedPassword, height, weight, bmi, weightHistory: [{ weight: weight, date: new Date() }] });
+
   await user.save();
 
   res.json({ message: 'User registered', userId: user._id });
@@ -81,7 +81,6 @@ app.post('/login', async (req, res) => {
 
 // Logout and remove current session (protects the main page)
 app.post('/logout', (req, res) => {
-
   req.session.destroy((err) => {
       if (err) {
           console.error('Error destroying session:', err);
@@ -97,19 +96,29 @@ app.post('/logout', (req, res) => {
   });
 });
 
-// TO-DO: Fix profile update
+// Update Profile
 app.post('/update-profile', async (req, res) => {
 
   const { email, height, weight } = req.body;
+
+  if (weight && (weight < 0 || weight > 500)) {
+    return res.status(400).json({ message: 'Weight must be between 0KG and 500KG' });
+  }
+
   const user = await User.findById(req.session.userId);
 
   user.email = email || user.email;
   user.height = height || user.height;
   user.weight = weight || user.weight;
 
-  // Recalculate BMI
-  if (height && weight) {
+  // Recalculate BMI and update weight history
+  if (weight || height) {
     user.bmi = user.weight / ((user.height / 100) ** 2);
+  }
+
+  // Update weight history
+  if (weight) {
+    user.weightHistory.push({ weight: weight, date: new Date() });
   }
 
   await user.save()
@@ -131,7 +140,7 @@ app.get('/check-auth', (req, res) => {
 app.get('/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
-  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi });
+  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory });
 
 });
 

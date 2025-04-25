@@ -14,7 +14,7 @@
                         <input type="number" v-model="weight">
                     </div>
                 <div>
-                    <p v-if="errData" >{{errData}}</p>
+                    <p v-if="msg">{{ msg }}</p>
                     <button @click="handleSubmit">Submit</button>
                 </div>
                 </form>
@@ -28,7 +28,7 @@
     export default {
         data() {
             return {
-                errData: '',
+                msg: '',
                 email: '',
                 height: '',
                 weight: '',
@@ -42,9 +42,9 @@
 
             async handleSubmit(event) {
 
-            event.preventDefault();
+                event.preventDefault(); // Prevent the default form submission
+                this.errData = ''; // Clear any previous error message
 
-            try {
                 const res = await fetch('http://localhost:5000/update-profile', {
                     method: 'POST',
                     headers: {
@@ -53,19 +53,16 @@
                     credentials: 'include',
                     body: JSON.stringify({ email: this.email, height: this.height, weight: this.weight })
                 });
-
-                if (!res.ok) {
+                if (res.ok) {
+                    this.msg = ''
+                    this.msg = 'Profile updated successfully!';
+                } else { 
                     const errorData = await res.json();
-                    this.errData = errorData.message;
-                } else {  
-                }
-            } catch (error) {
-                console.error('Profile update error:', error);
-                alert('An error occurred during profile update.');
-            }
-            }
+                    this.msg = errorData.message; 
                 }
             }
+        }
+    }
 
     </script>
 

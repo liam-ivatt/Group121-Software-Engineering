@@ -32,6 +32,7 @@ h1 {
   padding-top: 30px;
   display: flex;
   justify-content: center;
+  align-items: flex-start;;
 }
 
 button {
