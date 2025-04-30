@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+
 const User = require('./models/User');
 
 const app = express();
@@ -147,6 +148,8 @@ app.get('/user', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
+
+
 
 
   

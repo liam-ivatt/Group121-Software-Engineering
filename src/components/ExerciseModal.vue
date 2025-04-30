@@ -3,12 +3,34 @@
         <div class="modal">
             <form>
                 <h1>Add to your Exercise Log</h1>
-                <div class="food-list">
-                    <div class="food-item">
+                <div class="form-group">
+                    <label>Exercise Type</label>
+                    <select name="exercises" id="exercises" v-model="exerciseName">
+                         <option value="weightLifting">Weight Lifting</option>
+                        <option value="Running">Running</option>
+                        <option value="rockClimbing">Rock Climbing</option>
+                        <option value="Swimming">Swimming</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label v-if="exerciseName !== 'Running'">Duration (minutes)</label>
+                    <input type="number" v-model="exerciseDuration" v-if="exerciseName !== 'Running'">
+                    <label v-if="exerciseName === 'Running'">Distance (KM)</label>
+                    <input type="number" v-model="exerciseCalories" v-if="exerciseName === 'Running'">
+                </div>
+
+
+                <div class="form-group">
+                    <button @click="handleSubmit">Add Exercise</button>
+                </div>
+
+                <div class="exercise-list">
+                    <div class="exercise-item">
                         <ul>
-                            <li v-for="(item, index) in foodItems" :key="index">
+                            <li v-for="(item, index) in exercises" :key="index">
                                 <h3>{{ item.name }}</h3>
                                 <p>{{ item.calories }} calories</p>
+                                <button>Remove</button>
                             </li>
                         </ul>
                     </div>
@@ -24,6 +46,16 @@ export default {
 
     data() {
         return {
+            errData: '',
+            exerciseName: 'weightLifting',
+            exerciseDuration: 0,
+            exerciseCalories: 0,
+            exercises: [
+                { name: 'Weight Lifting', calories: 0 },
+                { name: 'Running', calories: 0 },
+                { name: 'Rock Climbing', calories: 0 },
+                { name: 'Swimming', calories: 0 }
+            ],
         }
     },
     methods: {
@@ -36,7 +68,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal {
     position: fixed;
     top: 50%;
@@ -48,7 +79,8 @@ export default {
     padding: 20px;
     background: white;
     border-radius: 10px;
-}   
+}
+
 .backdrop {
     top: 0;
     position: fixed;
@@ -60,30 +92,37 @@ export default {
 }
 
 form {
-  width: 500px;
-  margin: 20px auto;
-}
-
-label {
-  display: block;
-  margin: 20px 0 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  outline: none;
-  margin: 10px auto;
-  
+    width: 500px;
+    margin: 20px auto;
 }
 
 form h1 {
     display: block;
     text-align: center;
     padding-bottom: 10px;
-}   
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+form select, input {
+    width: 25%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    outline: none;
+    margin: 0;
+}
+
+form label {
+    width: 25%;
+    font-weight: 500;
+}
 
 form button {
     background-color: white;
@@ -97,32 +136,35 @@ form button {
     cursor: pointer;
     margin: 20px auto 0;
     display: block;
+    margin-bottom: 20px;
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 form button:hover {
     background-color: #eee;
 }
 
-.food-list {
+.exercise-list {
     padding: 20px;
     width: 90%;
     border: 1px solid #c1c1c1;
     margin: 0 auto;
     border-radius: 10px;
-    height: 300px; 
-    overflow-y: auto; 
-    overflow-x: hidden; 
-
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.food-list ul {
+.exercise-list ul {
     list-style-type: none;
     padding: 0;
-    margin: 0; 
+    margin: 0;
     width: 100%;
 }
 
-.food-list li {
+.exercise-list li {
     padding: 10px 15px;
     margin: 8px 0;
     background-color: #f8f8f8;
@@ -136,11 +178,18 @@ form button:hover {
     transition: background-color 0.3s;
 }
 
-.food-list li:hover {
+.exercise-list li:hover {
     background-color: #f1f1f1;
     cursor: pointer;
 }
 
+.modal::-webkit-scrollbar {
+  display: none;  
+}
+
+.exercise-list::-webkit-scrollbar {
+  display: none;  
+}
 
 
 

@@ -32,6 +32,7 @@
                 email: '',
                 height: '',
                 weight: '',
+                name: '',
             }
         },
 
@@ -60,7 +61,29 @@
                     const errorData = await res.json();
                     this.msg = errorData.message; 
                 }
+            },
+
+            async getUserData() {
+
+                const res = await fetch('http://localhost:5000/user', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    this.email = data.email;
+                    this.height = data.height;
+                    this.weight = data.weight;
+                    this.name = data.firstName.charAt(0).toUpperCase() + data.firstName.slice(1);
+                } else {
+                    console.error('Error fetching user data');
+                }
+
             }
+        },
+        mounted() {
+            this.getUserData();
         }
     }
 
