@@ -14,7 +14,7 @@
                     <input v-model="targetDate" type="date" placeholder="Date" required>
                 </div>
             <div>
-                <p v-if="errData" >{{errData}}</p>
+                <p v-if="errMsg" >{{errMsg}}</p>
                 <button type="submit">Submit</button>
             </div>
             </form>
@@ -27,7 +27,7 @@
 export default {
     data() {
         return {
-            errData: '',
+            errMsg: '',
             goalName: '',
             targetWeight: '',
             targetDate: ''

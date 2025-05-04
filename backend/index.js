@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 const User = require('./models/User');
+const Goals = require('./models/Goals');
 
 const app = express();
 const PORT = 5000;
@@ -154,6 +155,8 @@ app.post('/Goals', async(req,res) => {
   const {goalName, targetWeight, targetDate} = req.body;
 
   const existingGoalName = await Goals.findOne({goalName});
+
+  console.log(req.body)
 
   if (existingGoalName){
     return res.status(400).json({message: 'Goal name already exists, please choose another'})
