@@ -1,21 +1,21 @@
 <template>
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
-            <form>
+            <form @submit.prevent="goalSubmission">
                 <h1>Set a new goal</h1>
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text">
+                    <input v-model="goalName" type="text" placeholder="Name" required>
                 </div>  
                 <div class="form-group">
                     <label>Goal Weight (KG):</label>
-                    <input type="number">
+                    <input v-model="targetWeight" type="number" placeholder="Weight" required>
                     <label>Acheivement Date:</label>
-                    <input type="date">
+                    <input v-model="targetDate" type="date" placeholder="Date" required>
                 </div>
             <div>
                 <p v-if="errData" >{{errData}}</p>
-                <button @click="handleSubmit">Submit</button>
+                <button type="submit">Submit</button>
             </div>
             </form>
         </div>
@@ -29,11 +29,42 @@ export default {
         return {
             errData: '',
             goalName: '',
-            goalWeight: '',
-            achDate: ''
+            targetWeight: '',
+            targetDate: ''
         }
     },
     methods: {
+        async goalSubmission(){
+            try {
+                const res = await fetch('http://localhost:5000/Goals',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        goalName: this.goalName,
+                        targetWeight: this.targetWeight,
+                        targetDate: this.targetDate
+                    })
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    this.errMsg = errorData.message;
+                } else {
+                    this.errMsg = ''; 
+                    this.msg = "Goal created. Good luck!";
+                    //clear form
+                    this.goalName = '';
+                    this.targetWeight = '';
+                    this.targetDate = '';
+                }
+            } catch (error) {
+                console.error('Goal Creation Error: ', error);
+                alert('An error occurred during the creation of your goal.');
+            }
+        },
+
         closeModal() {
             this.$emit('close')
         }
