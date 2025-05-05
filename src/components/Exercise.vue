@@ -128,6 +128,15 @@
     padding: 0; 
   }
 
+  @media only screen and (orientation: portrait){
+    .exercise{
+      float: none;
+      margin: 0 auto;
+      width: 85%;
+      margin-bottom: 5px;
+    }
+  }
+
 
   
   </style>

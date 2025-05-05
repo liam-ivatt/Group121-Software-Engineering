@@ -1,5 +1,7 @@
 <template>
-  <h1>Welcome to the hub of self-improvement</h1>
+  <div class="title">
+    <h1>Welcome to the hub of self-improvement</h1>
+  </div>
   <div class="wrapper">
     <LoginForm />
     <SignupForm />
@@ -17,22 +19,25 @@ export default {
 </script>
 
 <style scoped>
+.title {
+    display: inline-block;
+    text-align: center;
+    background-color: white;
+    width:100%;
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
 
 h1 {
-  padding: 20px;
-  position: relative;
-  top: 20px;
-  display: inline;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
 }
 
 .wrapper {
-  padding-top: 30px;
-  display: flex;
+  display: block;
   justify-content: center;
-  align-items: flex-start;;
+  align-items: flex-start;
 }
 
 button {
@@ -53,5 +58,22 @@ button:hover {
   background-color: #eee;
 }
 
+@media only screen and (orientation: portrait){
+  .wrapper {
+  display: block;
+  justify-content: center;
+  align-items: flex-start;;
+}
+  .title{
+    margin: 0px;
+    width: 98%;
+    margin-bottom: 5px;
+    border-radius: 0px;
+    padding: 1%;
+  } 
+  h1{
+    margin: 4%;
+  }
+}
 
 </style>

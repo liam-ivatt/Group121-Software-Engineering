@@ -53,16 +53,18 @@
   
   <style scoped>
   .goals {
+    position: block;
+    margin-right: 5%;
+    float: right;
     display: flex;
     flex-direction: column; 
     padding: 20px;
     background-color: white;
-    width: 50%;
-    margin: 0 auto;
+    width: 40%;
     margin-bottom: 20px;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  }
+}
   
   .goals-header {
     display: flex;
@@ -95,6 +97,15 @@
   
   .addGoal:hover {
     background-color: #eee;
+  }
+
+  @media only screen and (orientation: portrait){
+  .goals{
+    float: none;
+    margin: 0 auto;
+    width: 85%;
+    margin-bottom: 5px;
+   }
   }
   
   </style>

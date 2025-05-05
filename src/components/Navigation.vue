@@ -68,10 +68,12 @@ div {
     align-items: center;
     padding: 20px;
     background-color: white;
-    width: 50%;
-    margin: 0 auto;
+    left: 0px;
+    right: 0px;
     margin-bottom: 20px;
     border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
@@ -111,6 +113,29 @@ div {
 
 .profile:hover {
     background-color: #eee;
+}
+
+@media only screen and (orientation: portrait){
+  div{
+    margin: 0px;
+    width: 98%;
+    margin-bottom: 5px;
+    border-radius: 0px;
+    padding: 1%;
+  } 
+  h1{
+    margin: 4%;
+  }
+  .profile{
+    margin-right: 1%;
+    height:80%;
+  }
+  .logout{
+    position: relative; 
+    margin: 0%;
+    margin-right: 4%;
+    height:80%;
+  }
 }
 
 </style>

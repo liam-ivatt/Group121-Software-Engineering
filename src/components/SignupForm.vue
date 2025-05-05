@@ -92,13 +92,22 @@ button:hover {
 }
 
 .sign {
-  text-align: center;
-  padding: 20px 0;
-  background-color: white;
+  position: block;
+    margin-right: 5%;
+    margin-top: 1%;
+    float: right;
+    display: flex;
+    flex-direction: column; 
+    padding: 20px;
+    background-color: white;
+    width: 40%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .sign form {
-  width: 300px;
+  width: 100%;
   margin: 20px auto;
 }
 
@@ -108,7 +117,7 @@ button:hover {
 }
 
 .sign input {
-  width: 100%;
+  width: 80%;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #eee;
@@ -117,11 +126,14 @@ button:hover {
   
 }
 
-.sign {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  border-radius: 10px;
-  width: 500px;
-  margin: 20px 20px;
+@media only screen and (orientation: portrait){
+  .sign{
+    float: none;
+    margin: 0 auto;
+    width: 85%;
+    margin-bottom: 5px;
+    padding:1%;
+  }
 }
 
 

@@ -70,14 +70,23 @@ button:hover {
 }
 
 .login {
-  text-align: center;
-  padding: 20px 0;
+  position: block;
+  margin-left: 5%;
+  margin-top: 1%;
+  float: left;
+  display: flex;
+  flex-direction: column; 
+  padding: 20px;
   background-color: white;
+  width: 40%;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .login form {
-  width: 300px;
-  margin: 20px auto;
+  width: 90%;
+  margin: 2% auto;
 }
 
 .login label {
@@ -86,7 +95,7 @@ button:hover {
 }
 
 .login input {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #eee;
@@ -94,11 +103,16 @@ button:hover {
   margin: 10px auto;
 }
 
-.login {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  border-radius: 10px;
-  width: 500px;
-  margin: 20px 20px;
+@media only screen and (orientation: portrait){
+  .login{
+    position: relative;
+    float: none;
+    margin: 0 auto;
+    padding: 1%;
+    width: 85%;
+    margin: 0 auto;
+    margin-bottom: 5px;
+  }
 }
 
 </style>
