@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 const User = require('./models/User');
+const Goals = require('./models/Goals');
 
 const app = express();
 const PORT = 5000;
