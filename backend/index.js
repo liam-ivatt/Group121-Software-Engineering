@@ -182,4 +182,25 @@ app.delete('/delete-exercise', async (req, res) => {
 
 });
 
+// Goals CRUD
+app.post('/Goals', async(req,res) => {
+ 
+  const {goalName, targetWeight, targetDate} = req.body;
+  const existingGoalName = await Goals.findOne({goalName});
+
+  if (existingGoalName){
+    return res.status(400).json({message: 'Goal name already exists, please choose another'})
+  }
+ 
+  const currentDate = new Date().toJSON().slice(0,10);
+ 
+  if (targetDate < currentDate){
+    return res.status(400).json({message: 'Target date is unavailable, please choose another'})
+  }
+
+  const goals = new Goals({goalName, targetWeight, targetDate});
+  await goals.save();
+  return res.status(201).json({message: 'Goal successfully created - Well done, and good luck!'})
+});
+
 
