@@ -141,7 +141,7 @@ app.get('/check-auth', (req, res) => {
 app.get('/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
-  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory });
+  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory, exerciseHistory: user.exerciseHistory });
 
 });
 
@@ -149,7 +149,36 @@ app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
 
+// Exercise CRUD
+app.post('/add-exercise', async (req, res) => {
+  const { exercise, exerciseStat, date } = req.body;
+  const user = await User.findById(req.session.userId);
+
+  if (exerciseStat < 0 || exerciseStat > 1000) {
+    return res.status(400).json({ message: 'Exercise duration/distance must be between 0 and 1000' });
+  }
+
+  user.exerciseHistory.push({ exercise, exerciseStat, date });
+  await user.save();
+
+  res.status(200).json({ message: 'Exercise entry added' });
+});
+
+app.delete('/delete-exercise', async (req, res) => {
+
+  const { id } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.session.userId,
+    { $pull: { exerciseHistory: { _id: id } } },
+    { new: true }
+  );
+
+  res.status(200).json({ 
+    message: 'Exercise deleted successfully',
+    remainingExercises: user.exerciseHistory
+  });
+
+});
 
 
-
-  

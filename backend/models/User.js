@@ -5,6 +5,12 @@ const WeightEntrySchema = new mongoose.Schema({
     date: { type: Date, default: Date.now }
 });
 
+const ExerciseEntrySchema = new mongoose.Schema({
+    exercise: String,
+    exerciseStat: Number,
+    date: { type: Date, default: Date.now }
+});
+
 
 const UserSchema = new mongoose.Schema({
   firstName: String,
@@ -16,6 +22,7 @@ const UserSchema = new mongoose.Schema({
   weight: Number,
   bmi: Number,
   weightHistory: [WeightEntrySchema],
+  exerciseHistory: [ExerciseEntrySchema],
 });
 
 module.exports = mongoose.model('User', UserSchema);

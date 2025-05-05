@@ -1,41 +1,43 @@
 <template>
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
-            <form>
+            <form @submit.prevent="handleSubmit">
                 <h1>Add to your Exercise Log</h1>
                 <div class="form-group">
                     <label>Exercise Type</label>
                     <select name="exercises" id="exercises" v-model="exerciseName">
-                         <option value="weightLifting">Weight Lifting</option>
+                        <option value="Weight Lifting">Weight Lifting</option>
                         <option value="Running">Running</option>
-                        <option value="rockClimbing">Rock Climbing</option>
+                        <option value="Rock Climbing">Rock Climbing</option>
                         <option value="Swimming">Swimming</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label v-if="exerciseName !== 'Running'">Duration (minutes)</label>
-                    <input type="number" v-model="exerciseDuration" v-if="exerciseName !== 'Running'">
+                    <input type="number" v-model="exerciseStat" v-if="exerciseName !== 'Running'">
                     <label v-if="exerciseName === 'Running'">Distance (KM)</label>
-                    <input type="number" v-model="exerciseCalories" v-if="exerciseName === 'Running'">
+                    <input type="number" v-model="exerciseStat" v-if="exerciseName === 'Running'">
                 </div>
+
+                <p v-if="msg">{{ msg }}</p>
 
 
                 <div class="form-group">
-                    <button @click="handleSubmit">Add Exercise</button>
+                    <button>Add Exercise</button>
                 </div>
-
-                <div class="exercise-list">
-                    <div class="exercise-item">
-                        <ul>
-                            <li v-for="(item, index) in exercises" :key="index">
-                                <h3>{{ item.name }}</h3>
-                                <p>{{ item.calories }} calories</p>
-                                <button>Remove</button>
-                            </li>
-                        </ul>
-                    </div>
-                </div> 
             </form>
+
+            <div class="exercise-list">
+                <ul>
+                    <li v-for="(item, index) in exercises" :key="index">
+                        <h3>{{ item.name }}</h3>
+                        <p v-if="item.name === 'Running'">Distance: {{ item.stat }}</p>
+                        <p v-else>Duration: {{ item.stat }}</p>
+                        <p>{{ item.date }}</p>
+                        <button @click="deleteExercise(item.id)" class="add-exercise">Remove</button>
+                    </li>
+                </ul>
+            </div> 
         </div>
     </div>
 </template>
@@ -47,22 +49,87 @@ export default {
     data() {
         return {
             errData: '',
-            exerciseName: 'weightLifting',
-            exerciseDuration: 0,
-            exerciseCalories: 0,
-            exercises: [
-                { name: 'Weight Lifting', calories: 0 },
-                { name: 'Running', calories: 0 },
-                { name: 'Rock Climbing', calories: 0 },
-                { name: 'Swimming', calories: 0 }
-            ],
+            exerciseName: 'Weight Lifting',
+            exerciseStat: 0,
+            exercises: [],
+            msg: ''
         }
     },
     methods: {
         closeModal() {
             this.$emit('close')
+        },
+        async handleSubmit() {
+            
+            this.errData = '';
+
+            const res = await fetch('http://localhost:5000/add-exercise', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ exercise: this.exerciseName, exerciseStat: this.exerciseStat, date: new Date().toLocaleDateString('en-GB') }),
+            });
+
+            console.log(new Date().toLocaleDateString('en-GB'))
+
+        
+            if (res.ok) {
+                    this.msg = ''
+                    this.msg = 'Exercise added successfully!';
+                    await this.getUserData();
+                } else { 
+                    const errorData = await res.json();
+                    this.msg = errorData.message; 
+            }
+        
+        },
+        async getUserData() {
+            const res = await fetch('http://localhost:5000/user', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+
+                console.log(data.exerciseHistory)
+
+                if (data.exerciseHistory) {
+                        this.exercises = data.exerciseHistory.map(exercise => {
+                            return {
+                                id: exercise._id,
+                                name: exercise.exercise.charAt(0).toUpperCase() + exercise.exercise.slice(1),
+                                stat: exercise.exerciseStat,
+                                date: new Date(exercise.date).toLocaleDateString('en-GB'),
+                            };
+                        });
+            } else {
+                console.error('Error fetching user data');
+            }
+            }
+        },
+        async deleteExercise(id) {
+            const res = await fetch('http://localhost:5000/delete-exercise', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ id }),
+            });
+
+            if (res.ok) {
+                await this.getUserData(); 
+            } else {
+                console.error('Error deleting exercise');
+            }
         }
-    }
+    },
+    mounted() {
+        this.getUserData();
+    },
 }
 
 </script>
@@ -111,7 +178,7 @@ form h1 {
 }
 
 form select, input {
-    width: 25%;
+    width: 30%;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #eee;
@@ -134,12 +201,7 @@ form button {
     font-size: 15px;
     transition-duration: 0.4s;
     cursor: pointer;
-    margin: 20px auto 0;
     display: block;
-    margin-bottom: 20px;
-    width: 30%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 form button:hover {
@@ -148,7 +210,6 @@ form button:hover {
 
 .exercise-list {
     padding: 20px;
-    width: 90%;
     border: 1px solid #c1c1c1;
     margin: 0 auto;
     border-radius: 10px;
@@ -158,10 +219,8 @@ form button:hover {
 }
 
 .exercise-list ul {
-    list-style-type: none;
     padding: 0;
     margin: 0;
-    width: 100%;
 }
 
 .exercise-list li {
@@ -171,16 +230,11 @@ form button:hover {
     border-radius: 6px;
     border-left: 4px solid #f7c8f3;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
     align-items: center;
+    display: flex;
     font-size: 16px;
+    justify-content: space-between;
     transition: background-color 0.3s;
-}
-
-.exercise-list li:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
 }
 
 .modal::-webkit-scrollbar {
@@ -191,6 +245,18 @@ form button:hover {
   display: none;  
 }
 
+.add-exercise {
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 10px;
+    color: black;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
 
 
 </style>

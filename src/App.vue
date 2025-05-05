@@ -35,6 +35,11 @@ html, body {
 }
 
 html {
-  background-color: #f7c8f3;
+  background-image: url('/src/assets/background.jpg'); 
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-attachment: fixed; 
 }
+
 </style>

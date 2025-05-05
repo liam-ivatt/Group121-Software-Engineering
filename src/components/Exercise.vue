@@ -1,12 +1,24 @@
 <template>
     <ExerciseModal v-if="showModal" @close="toggleModal" />
-    <div class="goals">
-      <div class="goals-header">
+    <div class="exercise">
+      <div class="exercise-header">
         <h1>Exercise</h1>
-        <button class="addGoal" @click="toggleModal">Add new food</button>
+        <button class="addExercise" @click="toggleModal">Add/Remove Activities</button>
       </div>
-      <div class="current-goals">
-        <h2>Exercise History</h2>
+      <div class="current-exercises">
+        <h2>Todays Activities</h2>
+
+        <div class="exercise-list">
+          <ul>
+            <h3 v-if="exercises.length === 0">No activities logged today!</h3>
+            <li v-for="(item, index) in exercises" :key="index">
+              <h3>{{ item.name }}</h3>
+              <p v-if="item.name === 'Running'">Distance: {{ item.stat }}km</p>
+              <p v-if="item.name !== 'Running'">Duration: {{ item.stat }} minutes</p>
+            </li>
+          </ul>
+        </div> 
+
       </div>
     </div>  
   </template>
@@ -20,6 +32,7 @@
     data() {
       return {
         showModal: false,
+        exercises: [],
       }
     },
     created() {
@@ -31,20 +44,37 @@
           },
           async getUserData() {
               try {
-                  const response = await fetch('http://localhost:5000/user', {
+                  const res = await fetch('http://localhost:5000/user', {
                       method: 'GET',
                       credentials: 'include',  
                   });
-                  if (response.ok) {
-                      const data = await response.json();
-                      // PUT DATA IN HERE THAT YOU WANT TO RETRIEVE FROM THE BACKEND
-                      this.firstName = data.firstName.charAt(0).toUpperCase() + data.firstName.slice(1);
-                  } else {
-                      console.error('Error fetching user data');
-                  }
+
+                if (res.ok) {
+
+                const data = await res.json();
+
+                const today = new Date().toLocaleDateString('en-GB');
+
+                if (data.exerciseHistory) {                
+                        this.exercises = data.exerciseHistory
+                        .filter(exercise => new Date(exercise.date).toLocaleDateString('en-GB') === today)
+                        .map(exercise => {
+                            return {
+                              name: exercise.exercise,
+                              stat: exercise.exerciseStat,
+                            };
+                        });
+                } else {
+                    console.error('Error fetching user data');
+                }
+                }
+                  
               } catch (error) {
                   console.error('Error:', error);
               }
+          },
+          mounted() {
+              this.getUserData();
           },
       },
   }
@@ -52,7 +82,7 @@
   </script>
   
   <style scoped>
-  .goals {
+  .exercise {
     display: flex;
     flex-direction: column; 
     padding: 20px;
@@ -64,7 +94,7 @@
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   }
   
-  .goals-header {
+  .exercise-header {
     display: flex;
     justify-content: space-between; 
     align-items: center;
@@ -76,11 +106,7 @@
     margin: 0; 
   }
   
-  .current-goals {
-      float: left;
-  }
-  
-  .addGoal {
+  .addExercise {
     background-color: white;
     border: 1px solid #c1c1c1;
     border-radius: 10px;
@@ -93,8 +119,15 @@
     cursor: pointer;
   }
   
-  .addGoal:hover {
+  .addExercise:hover {
     background-color: #eee;
   }
+
+  ul {
+    list-style-type: none; 
+    padding: 0; 
+  }
+
+
   
   </style>
