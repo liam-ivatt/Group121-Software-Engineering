@@ -14,7 +14,7 @@
                     <input v-model="targetDate" type="date" placeholder="Date" required>
                 </div>
             <div>
-                <p v-if="errMsg" >{{errMsg}}</p>
+                <p v-if="msg" >{{msg}}</p>
                 <button type="submit">Submit</button>
             </div>
             </form>
@@ -27,7 +27,7 @@
 export default {
     data() {
         return {
-            errMsg: '',
+            msg: '',
             goalName: '',
             targetWeight: '',
             targetDate: ''
@@ -50,9 +50,9 @@ export default {
 
                 if (!res.ok) {
                     const errorData = await res.json();
-                    this.errMsg = errorData.message;
+                    this.msg = errorData.message;
                 } else {
-                    this.errMsg = ''; 
+                    this.msg = ''; 
                     this.msg = "Goal created. Good luck!";
                     //clear form
                     this.goalName = '';

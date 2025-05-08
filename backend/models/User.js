@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { goalsSchema } = require('./Goals');
 
 const WeightEntrySchema = new mongoose.Schema({
     weight: Number,
@@ -11,7 +12,6 @@ const ExerciseEntrySchema = new mongoose.Schema({
     date: { type: Date, default: Date.now }
 });
 
-
 const UserSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema({
   bmi: Number,
   weightHistory: [WeightEntrySchema],
   exerciseHistory: [ExerciseEntrySchema],
+  goalsHistory: {type: [goalsSchema], default: []}
 });
 
 module.exports = mongoose.model('User', UserSchema);

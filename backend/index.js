@@ -6,7 +6,6 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 const User = require('./models/User');
-const Goals = require('./models/Goals');
 
 const app = express();
 const PORT = 5000;
@@ -142,7 +141,7 @@ app.get('/check-auth', (req, res) => {
 app.get('/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
-  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory, exerciseHistory: user.exerciseHistory });
+  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory, exerciseHistory: user.exerciseHistory, goalsHistory: user.goalsHistory });
 
 });
 
@@ -186,20 +185,23 @@ app.delete('/delete-exercise', async (req, res) => {
 app.post('/Goals', async(req,res) => {
  
   const {goalName, targetWeight, targetDate} = req.body;
-  const existingGoalName = await Goals.findOne({goalName});
+  const user = await User.findById(req.session.userId);
 
-  if (existingGoalName){
-    return res.status(400).json({message: 'Goal name already exists, please choose another'})
-  }
+  //const existingGoalName = await user.goalsHistory.findOne({goalName});
+  
+  //if (existingGoalName){
+  //  return res.status(400).json({message: 'Goal name already exists, please choose another'})
+  //}
  
   const currentDate = new Date().toJSON().slice(0,10);
- 
+
   if (targetDate < currentDate){
     return res.status(400).json({message: 'Target date is unavailable, please choose another'})
   }
 
-  const goals = new Goals({goalName, targetWeight, targetDate});
-  await goals.save();
+  user.goalsHistory.push({goalName, targetWeight, targetDate});
+  await user.save();
+
   return res.status(201).json({message: 'Goal successfully created - Well done, and good luck!'})
 });
 
