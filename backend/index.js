@@ -191,7 +191,7 @@ app.post('/Goals', async(req,res) => {
   if (existingGoalName){
     return res.status(400).json({message: 'Goal name already exists, please choose another'})
   }
- 
+
   const currentDate = new Date().toJSON().slice(0,10);
  
   if (targetDate < currentDate){

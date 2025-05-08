@@ -2,6 +2,7 @@
     <Modal v-if="showModal" @close="toggleModal" />
     <div>
         <h1 class="header">Welcome, {{ firstName }}</h1>
+        <button class="group" @click="$router.push('/group')">Groups</button>
         <button class="profile" @click="toggleModal">Profile</button>
         <button class="logout" @click="handleLogout">Log out</button>
     </div>
@@ -108,10 +109,28 @@ div {
     font-size: 15px;
     transition-duration: 0.4s;
     cursor: pointer;
+    margin-left: 10px;
 
 }
 
 .profile:hover {
+    background-color: #eee;
+}
+
+.group {
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 10px;
+    color: black;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.group:hover {
     background-color: #eee;
 }
 

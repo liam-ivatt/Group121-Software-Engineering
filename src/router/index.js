@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import WelcomeView from '../views/WelcomeView.vue'
 import HomeView from '../views/HomeView.vue'
+import GroupView from '@/views/GroupView.vue'
 
 const routes = [
   {
@@ -15,7 +16,15 @@ const routes = [
     path: '/welcome',
     name: 'welcome',
     component: WelcomeView
-  }
+  },
+  {
+    path: '/group',
+    name: 'group',
+    component: GroupView,
+    meta: {
+      requiresAuth: true,
+    }
+  },
 ]
 
 const router = createRouter({

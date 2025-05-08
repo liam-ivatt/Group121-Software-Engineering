@@ -96,6 +96,9 @@ export default {
 
                 console.log(data.exerciseHistory)
 
+                const today = new Date().toLocaleDateString('en-GB');
+                console.log(today)
+
                 if (data.exerciseHistory) {
                         this.exercises = data.exerciseHistory.map(exercise => {
                             return {
