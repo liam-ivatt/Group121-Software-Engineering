@@ -53,12 +53,11 @@
 
                 const data = await res.json();
 
-                console.log("test2", new Date(data.exerciseHistory[0].date).toLocaleDateString('en-US'))
-                console.log("test3", new Date().toLocaleDateString('en-GB'))
+                const today = new Date().toLocaleDateString('en-GB');
 
                 if (data.exerciseHistory) {                
                         this.exercises = data.exerciseHistory
-                        .filter(exercise => new Date(exercise.date).toLocaleDateString('en-US') === new Date().toLocaleDateString('en-GB'))
+                        .filter(exercise => exercise.date === today)
                         .map(exercise => {
                             return {
                               name: exercise.exercise,

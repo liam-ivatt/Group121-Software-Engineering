@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 const User = require('./models/User');
+const Group = require('./models/Group');
 
 const app = express();
 const PORT = 5000;
@@ -141,7 +142,19 @@ app.get('/check-auth', (req, res) => {
 app.get('/user', async (req, res) => {
   
   const user = await User.findById(req.session.userId);
-  res.json({ firstName: user.firstName, lastName: user.lastName, userName: user.userName, email: user.email, height: user.height, weight: user.weight, bmi: user.bmi, weightHistory: user.weightHistory, exerciseHistory: user.exerciseHistory, goalsHistory: user.goalsHistory });
+  res.json({ 
+    firstName: user.firstName, 
+    lastName: user.lastName, 
+    userName: user.userName, 
+    email: user.email, 
+    height: user.height, 
+    weight: user.weight, 
+    bmi: user.bmi, 
+    weightHistory: user.weightHistory, 
+    exerciseHistory: user.exerciseHistory, 
+    goalsHistory: user.goalsHistory, 
+    groups: user.groups 
+  });
 
 });
 
@@ -189,6 +202,98 @@ app.post('/create-goal', async(req,res) => {
 
   user.goalsHistory.push({ goalName, targetWeight, targetDate });
   await user.save();
+
+});
+
+// Group CRUD
+app.post('/create-group', async(req,res) => {
+
+  const { groupName } = req.body;
+  const user = await User.findById(req.session.userId);
+
+  const group = new Group({
+    groupName,
+    groupOwner: user._id,
+    groupMembers: [user._id],
+    joinCode: Math.random().toString(36).substring(2)
+  });
+
+  await group.save();
+
+  res.status(200).json({ message: 'Group created successfully' });
+
+});
+
+app.get('/get-groups', async(req,res) => {
+
+    const groups = await Group.find({ 
+      groupMembers: req.session.userId 
+    }).populate('groupOwner', 'userName firstName lastName')
+      .populate('groupMembers', 'userName firstName lastName');
+
+    const formattedGroups = groups.map(group => {
+      return {
+          id: group._id,
+          name: group.groupName,
+          userId: req.session.userId,
+          ownerId: group.groupOwner._id,
+      }
+    });
+
+    res.status(200).json({ formattedGroups });
+
+});
+
+app.delete('/delete-group', async(req,res) => {
+  const { groupId } = req.body;
+
+  const group = await Group.findById(groupId);
+
+  if (group.groupOwner.toString() !== req.session.userId) {
+    return res.status(403).json({ message: 'Only the group owner can delete this group' });
+  }
+
+  await Group.findByIdAndDelete(groupId);
+  res.status(200).json({ message: 'Group deleted successfully' });
+
+});
+
+app.post('/join-group', async(req,res) => {
+  const { joinCode } = req.body;
+
+  const group = await Group.findOne({ joinCode });
+
+  if (!group) {
+    return res.status(404).json({ message: 'Invite code not valid' });
+  }
+
+  const user = await User.findById(req.session.userId);
+
+  if (group.groupMembers.includes(user._id)) {
+    return res.status(400).json({ message: 'You are already a member of this group' });
+  }
+
+  group.groupMembers.push(user._id);
+  await group.save();
+
+});
+
+app.post('/leave-group', async(req,res) => {
+  const { id } = req.body;
+
+  const group = await Group.findById(id);
+  const user = await User.findById(req.session.userId);
+
+  if (!group.groupMembers.includes(user._id)) {
+    return res.status(400).json({ message: 'You are not a member of this group' });
+  }
+
+  group.groupMembers = group.groupMembers.filter(
+    member => !member.equals(user._id)
+  );
+
+  await group.save();  
+  res.status(200).json({ message: 'Left group successfully' });
 
 });
 

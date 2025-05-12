@@ -9,7 +9,7 @@ const WeightEntrySchema = new mongoose.Schema({
 const ExerciseEntrySchema = new mongoose.Schema({
     exercise: String,
     exerciseStat: Number,
-    date: { type: Date, default: Date.now }
+    date: { type: String, default: Date.now }
 });
 
 const UserSchema = new mongoose.Schema({
@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   bmi: Number,
   weightHistory: [WeightEntrySchema],
   exerciseHistory: [ExerciseEntrySchema],
-  goalsHistory: {type: [goalsSchema], default: []}
+  goalsHistory: {type: [goalsSchema], default: []},
 });
 
 module.exports = mongoose.model('User', UserSchema);
