@@ -9,7 +9,7 @@ const WeightEntrySchema = new mongoose.Schema({
 const ExerciseEntrySchema = new mongoose.Schema({
     exercise: String,
     exerciseStat: Number,
-    date: { type: Date, default: Date.now }
+    date: { type: String, default: Date.now }
 });
 
 const UserSchema = new mongoose.Schema({

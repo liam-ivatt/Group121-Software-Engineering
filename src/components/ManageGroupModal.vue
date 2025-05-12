@@ -2,9 +2,9 @@
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
             <form @submit.prevent="handleSubmit">
-                <h1>Create a new Group</h1>
+                <h1>Manage Group</h1>
                 <div class="form-group">
-                    <label>Group Name</label>
+                    <label>Invite </label>
                     <input v-model="groupName" type="text" placeholder="Name" required>
                 </div>  
             <div>
@@ -30,23 +30,7 @@ export default {
             this.$emit('close');
         },
         async handleSubmit() {
-            const res = await fetch('http://localhost:5000/create-group', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ groupName: this.groupName }),
-            }); 
 
-            const data = await res.json();
-
-            if (res.ok) {
-                this.msg = data.message;
-            } else {
-                const errData = await res.json();
-                this.msg = errData.message;
-            }
         },
     }
 }

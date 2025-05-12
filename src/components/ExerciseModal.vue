@@ -71,10 +71,7 @@ export default {
                 credentials: 'include',
                 body: JSON.stringify({ exercise: this.exerciseName, exerciseStat: this.exerciseStat, date: new Date().toLocaleDateString('en-GB') }),
             });
-
-            console.log(new Date().toLocaleDateString('en-GB'))
-
-        
+ 
             if (res.ok) {
                     this.msg = ''
                     this.msg = 'Exercise added successfully!';
@@ -96,16 +93,13 @@ export default {
 
                 console.log(data.exerciseHistory)
 
-                const today = new Date().toLocaleDateString('en-GB');
-                console.log(today)
-
                 if (data.exerciseHistory) {
                         this.exercises = data.exerciseHistory.map(exercise => {
                             return {
                                 id: exercise._id,
                                 name: exercise.exercise.charAt(0).toUpperCase() + exercise.exercise.slice(1),
                                 stat: exercise.exerciseStat,
-                                date: new Date(exercise.date).toLocaleDateString('en-GB'),
+                                date: exercise.date,
                             };
                         });
             } else {
