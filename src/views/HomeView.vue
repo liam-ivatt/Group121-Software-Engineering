@@ -65,6 +65,7 @@ export default {
                 });
                 if (res.ok) {
                     const data = await res.json();
+                    this.userData = data;
                     this.bmi = data.bmi.toFixed(2);
 
                     if (data.weightHistory) {
@@ -83,15 +84,22 @@ export default {
                 console.error('Error:', error);
             }
         },
-        checkDay() {
-            const today = new Date();
-            const day = today.getDay();
-            const firstDay = 1; // Monday
-            if (day === firstDay) {
-                this.showNotification = true;
-            } else {
-                this.showNotification = false;
+        async checkDay() {
+            if (!this.userData) {
+                console.error('User data not loaded yet');
+                return;
             }
+
+                if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0){
+                    const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
+                    
+                    const today = new Date();
+                    const targetDate = new Date(activeGoal.targetDate);
+                    
+                    this.showNotification = today >=targetDate;
+                } else {
+                    this.showNotification = false;
+                }
         }
     },
   data() {

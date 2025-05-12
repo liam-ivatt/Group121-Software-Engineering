@@ -58,7 +58,7 @@ app.post('/register', async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const bmi = weight / ((height / 100) ** 2);
 
-  const user = new User({ firstName, lastName, userName, email, password: hashedPassword, height, weight, bmi, weightHistory: [{ weight: weight, date: new Date() }] });
+  const user = new User({ firstName, lastName, userName, email, password: hashedPassword, height, weight, bmi, weightHistory: [{ weight: weight, date: new Date() }], goalCurrentlyActive: 0 });
 
   await user.save();
 
@@ -187,9 +187,100 @@ app.post('/create-goal', async(req,res) => {
   const { goalName, targetWeight, targetDate } = req.body;
   const user = await User.findById(req.session.userId);
 
+  //FINISH THIS BIT, NEED TO HAVE A WAY TO ACCEPT THE USERS RESPONSE, DELETE THE PREVIOUS GOAL
+  if (user.goalCurrentlyActive == 1){
+    return res.status(400).json({message:'You currently have a goal active. Would you like to overwrite it?'})
+  }
+
+  //Checks whether the goalName already exists
+  const existingGoalName = await user.goalsHistory.find(goal => goal.goalName === goalName);
+  if (existingGoalName){
+    return res.status(400).json({message:'Goal name already exists, please choose another'})
+  }
+
+  //Checks whether the weight entered is both smaller than the currentWeight (if they are not underweight already) and not an unhealthy weight
+  const newBMI = targetWeight / ((user.height / 100) ** 2);
+  if (user.weight < targetWeight && user.bmi > 18.5){
+    return res.status(400).json({message:'Target weight is larger than your current weight!'})
+  }
+  else if (newBMI < 18.5){
+    return res.status(400).json({message:'Target weight would lead to you having a BMI of under 18.5 which is not recommended, please select another weight'})
+  }
+
+  //Checks whether the date chosen is valid
+  const currentDate = new Date().toJSON().slice(0,10);
+  if (targetDate < currentDate){
+    return res.status(400).json({message:'Target date is unavailable, please choose another'})
+  }
+
   user.goalsHistory.push({ goalName, targetWeight, targetDate });
+  user.goalCurrentlyActive = 1;
   await user.save();
 
+  return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'})
 });
 
+//Goal Suggestion
+app.post('/suggest-goal', async(req,res) => {
+  const user = await User.findById(req.session.userID);
 
+  if (!user) {
+    return res.status(404).json({message:'User not found'});
+  }
+
+  const { goalsHistory, weight } = user;
+
+  if (!Array.isArray(goalsHistory) || goalsHistory.length === 0) {
+    //No previous goals = default
+    const defaultWeightLoss = weight *0.05; //5% weight loss
+    const defaultTargetWeight = weight - defaultWeightLoss;
+    const defaultTargetDate = new Date();
+    defaultTargetDate.setMonth(defaultTargetDate.getMonth() + 3); //3 months
+
+    const newGoal = {
+      goalName: 'Lose 5% of weight in 3 months',
+      targetWeight: defaultTargetWeight.toFixed(1),
+      targetDate: defaultTargetDate.toISOString().split('T')[0]
+    };
+
+    user.goalsHistory.push(newGoal);
+    user.goalCurrentlyActive = 1;
+    await user.save();
+
+    return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'})
+  }
+
+  //Calculate based on previous goals
+  const activeGoal = goalsHistory[goalsHistory.length - 1];
+  const previousWeight = weight;
+  const targetWeight = parseFloat(latestGoal.targetWeight);
+
+  //Calculate average rate of weight change
+  const totalDays = goalsHistory.reduce((sum, goal) =>{
+    const startDate = new Date(goal.startDate || user.weightHistory[0]?.date || new Date());
+    const endDate = new Date(goal.targetDate);
+    return sum + Math.max((endDate - startDate) / (1000 * 60 * 60 * 24), 1);
+  }, 0);
+  
+  const totalWeightChange = goalsHistory.reduce((sum, goal) => {
+    const goalWeight = parseFloat(goal.targetWeight);
+    return sum + (previousWeight - goalWeight);
+  }, 0);
+
+  const averageDailyChange = totalWeightChange / totalDays;
+  const newTargetWeight = (previousWeight - (averageDailyChange * 90)).toFixed(1); //3 months
+  const newTargetDate = new Date();
+  newTargetDate.setDate(newTargetDate.getDate() + 90); //3 months (90 days) 
+
+  const newGoal = {
+    goalName: 'Reach ${newTargetWeight}kg in 3 months',
+    targetWeight: newTargetWeight,
+    targetDate: newTargetDate.toISOString().split('T')[0]
+  };
+
+  user.goalsHistory.push(newGoal);
+  user.goalCurrentlyActive = 1;
+  await user.save();
+
+  return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'});
+});

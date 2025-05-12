@@ -35,16 +35,32 @@ export default {
     },
     methods: {
         async goalSubmission(){
-
-            const res = await fetch('http://localhost:5000/create-goal', {
+            try{
+                const res = await fetch('http://localhost:5000/create-goal', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
                 body: JSON.stringify({ goalName: this.goalName, targetWeight: this.targetWeight, targetDate: this.targetDate }),
-            });
+                });
 
+                if (!res.ok){
+                    const errorData = await res.json();
+                    this.msg = errorData.message;
+                } 
+                else{
+                    this.msg = ''; 
+                    this.msg = "Goal created. Good luck!";
+                    //clear form
+                    this.goalName = '';
+                    this.targetWeight = '';
+                    this.targetDate = '';
+                }
+            } catch (error) {
+                console.error('Goal Creation Error: ', error);
+                alert('An error occurred during the creation of your goal.');
+            }
         },
 
         closeModal() {

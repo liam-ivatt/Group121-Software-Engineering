@@ -23,7 +23,8 @@ const UserSchema = new mongoose.Schema({
   bmi: Number,
   weightHistory: [WeightEntrySchema],
   exerciseHistory: [ExerciseEntrySchema],
-  goalsHistory: {type: [goalsSchema], default: []}
+  goalsHistory: {type: [goalsSchema], default: []},
+  goalCurrentlyActive: Number
 });
 
 module.exports = mongoose.model('User', UserSchema);
