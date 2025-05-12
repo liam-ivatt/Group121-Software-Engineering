@@ -6,7 +6,12 @@
       <button class="addGoal" @click="toggleModal">Add new goal</button>
     </div>
     <div class="current-goals">
-      <h2>Current Goals</h2>
+        <ul>
+          <li v-for="(goal, index) in goals" :key="index">
+            <h3>{{ goal.goal }}</h3>
+            <p>Target: {{ goal.target }}</p>
+          </li>
+        </ul>
     </div>
   </div>  
 </template>
@@ -20,6 +25,7 @@ export default {
   data() {
     return {
       showModal: false,
+      goals: [],
     }
   },
   created() {
@@ -37,8 +43,14 @@ export default {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    // PUT DATA IN HERE THAT YOU WANT TO RETRIEVE FROM THE BACKEND
-                    this.firstName = data.firstName.charAt(0).toUpperCase() + data.firstName.slice(1);
+                    
+                    this.goals = data.goalsHistory.map(goal => {
+                        return {
+                            goal: goal.goalName,
+                            target: goal.targetWeight,
+                        }
+                    });
+
                 } else {
                     console.error('Error fetching user data');
                 }
