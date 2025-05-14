@@ -79,29 +79,56 @@ export default {
                             ]
                         };
                     } 
+                    this.checkDay();
                 }
             } catch (error) {
                 console.error('Error:', error);
             }
         },
-        async checkDay() {
+
+        checkDay() {
             if (!this.userData) {
-                console.error('User data not loaded yet');
                 return;
             }
 
-                if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0){
-                    const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
-                    
-                    const today = new Date();
-                    const targetDate = new Date(activeGoal.targetDate);
-                    
-                    this.showNotification = today >=targetDate;
+            const weightLoggedDate = localStorage.getItem('weightLoggedDate');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+
+            if (weightLoggedDate && new Date (weightLoggedDate).getTime() === today.getTime()){
+                console.log("Weight already logged for today.");
+                this.showNotification = false;
+                return;
+            }
+
+            if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0){
+            const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
+                
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+            const targetDate = new Date(activeGoal.targetDate);
+            targetDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+            console.log("Target date: " + targetDate);
+            console.log("Today: " + today);
+
+            if (targetDate > today){
+                if (activeGoal.targetWeight >= this.userData.weight){
+                    console.log("You have reached your goal!");
                 } else {
-                    this.showNotification = false;
+                    console.log("You have not reached your goal yet.");
+                    this.showNotification = true;
+
                 }
+            } else {
+                console.log("You have not reached your goal in time.");
+            }
+                    
+            } else {
+                this.showNotification = false;
+            }
         }
     },
+
   data() {
     return {
       showModal: false,
@@ -133,9 +160,6 @@ export default {
   },
     created() {
         this.getUserData();
-    },
-    mounted() {
-        this.checkDay();
     },
 }
 

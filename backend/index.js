@@ -153,6 +153,7 @@ app.get('/user', async (req, res) => {
     weightHistory: user.weightHistory, 
     exerciseHistory: user.exerciseHistory, 
     goalsHistory: user.goalsHistory, 
+    goalCurrentlyActive: user.goalCurrentlyActive,
     groups: user.groups 
   });
 
@@ -194,15 +195,15 @@ app.delete('/delete-exercise', async (req, res) => {
 
 });
 
-// Goals CRUD
+// GOALS CRUD
 app.post('/create-goal', async(req,res) => {
 
   const { goalName, targetWeight, targetDate } = req.body;
   const user = await User.findById(req.session.userId);
 
-  //FINISH THIS BIT, NEED TO HAVE A WAY TO ACCEPT THE USERS RESPONSE, DELETE THE PREVIOUS GOAL
+  //Checks whether the user has a goal currently active
   if (user.goalCurrentlyActive == 1){
-    return res.status(400).json({message:'You currently have a goal active. Would you like to overwrite it?'})
+    return res.status(400).json({message:'You currently have a goal active. If you would like to overwrite it, please delete your currently active goal first'});
   }
 
   //Checks whether the goalName already exists
@@ -233,7 +234,7 @@ app.post('/create-goal', async(req,res) => {
   return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'})
 });
 
-// Group CRUD
+// GROUP CRUD
 app.post('/create-group', async(req,res) => {
 
   const { groupName } = req.body;
@@ -325,67 +326,86 @@ app.post('/leave-group', async(req,res) => {
 
 });
 
-//Goal Suggestion
-app.post('/suggest-goal', async(req,res) => {
-  const user = await User.findById(req.session.userID);
-  
+//GOAL SUGGESTION
+app.post('/suggest-goal', async (req, res) => {
+  const user = await User.findById(req.session.userId);
+
   if (!user) {
-    return res.status(404).json({message:'User not found'});
+      return res.status(404).json({ message: 'User not found' });
   }
 
-  const { goalsHistory, weight } = user;
+  const { goalsHistory, weight, height } = user;
+  let suggestedGoal = {};
+
+  // Calculate minimum safe weight using BMI of 18.5
+  const minWeight = 18.5 * Math.pow(height / 100, 2);
 
   if (!Array.isArray(goalsHistory) || goalsHistory.length === 0) {
-    //No previous goals = default
-    const defaultWeightLoss = weight *0.05; //5% weight loss
-    const defaultTargetWeight = weight - defaultWeightLoss;
-    const defaultTargetDate = new Date();
-    defaultTargetDate.setMonth(defaultTargetDate.getMonth() + 3); //3 months
+      // Default 5% weight loss in 3 months
+      const defaultWeightLoss = weight * 0.05;
+      const defaultTargetWeight = Math.max(weight - defaultWeightLoss, minWeight);
 
-    const newGoal = {
-      goalName: 'Lose 5% of weight in 3 months',
-      targetWeight: defaultTargetWeight.toFixed(1),
-      targetDate: defaultTargetDate.toISOString().split('T')[0]
-    };
+      const defaultTargetDate = new Date();
+      defaultTargetDate.setDate(defaultTargetDate.getDate() + 90);
 
-    user.goalsHistory.push(newGoal);
-    user.goalCurrentlyActive = 1;
-    await user.save();
+      suggestedGoal = {
+          goalName: 'Lose 5% of weight in 3 months',
+          targetWeight: defaultTargetWeight.toFixed(0),
+          targetDate: defaultTargetDate.toISOString().split('T')[0]
+      };
+  } else {
+      let totalWeightChange = 0;
+      let totalDays = 0;
 
-    return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'})
+      // Calculate average daily change based on previous goals
+      for (let i = 1; i < goalsHistory.length; i++) {
+          const previous = goalsHistory[i - 1];
+          const current = goalsHistory[i];
+
+          const daysDiff = (new Date(current.targetDate) - new Date(previous.targetDate)) / (1000 * 60 * 60 * 24);
+          if (daysDiff <= 0) continue;
+
+          const weightChange = parseFloat(previous.targetWeight) - parseFloat(current.targetWeight);
+          totalWeightChange += weightChange;
+          totalDays += daysDiff;
+      }
+
+      const averageDailyChange = totalDays > 0 ? totalWeightChange / totalDays : 0;
+      const expectedWeightChange = averageDailyChange * 90;
+      const newTargetWeight = Math.max(weight - expectedWeightChange, minWeight).toFixed(0);
+
+      const newTargetDate = new Date();
+      newTargetDate.setDate(newTargetDate.getDate() + 90);
+
+      suggestedGoal = {
+          goalName: `Reach ${newTargetWeight} kg in 3 months`,
+          targetWeight: newTargetWeight,
+          targetDate: newTargetDate.toISOString().split('T')[0]
+      };
   }
 
-  //Calculate based on previous goals
-  const activeGoal = goalsHistory[goalsHistory.length - 1];
-  const previousWeight = weight;
-  const targetWeight = parseFloat(latestGoal.targetWeight);
+  console.log(suggestedGoal);
+  return res.status(200).json({ suggestedGoal });
+});
 
-  //Calculate average rate of weight change
-  const totalDays = goalsHistory.reduce((sum, goal) =>{
-    const startDate = new Date(goal.startDate || user.weightHistory[0]?.date || new Date());
-    const endDate = new Date(goal.targetDate);
-    return sum + Math.max((endDate - startDate) / (1000 * 60 * 60 * 24), 1);
-  }, 0);
-  
-  const totalWeightChange = goalsHistory.reduce((sum, goal) => {
-    const goalWeight = parseFloat(goal.targetWeight);
-    return sum + (previousWeight - goalWeight);
-  }, 0);
+//GOAL DELETE
+app.delete('/delete-goal', async (req, res) => {
 
-  const averageDailyChange = totalWeightChange / totalDays;
-  const newTargetWeight = (previousWeight - (averageDailyChange * 90)).toFixed(1); //3 months
-  const newTargetDate = new Date();
-  newTargetDate.setDate(newTargetDate.getDate() + 90); //3 months (90 days) 
+  const { id } = req.body;
 
-  const newGoal = {
-    goalName: 'Reach ${newTargetWeight}kg in 3 months',
-    targetWeight: newTargetWeight,
-    targetDate: newTargetDate.toISOString().split('T')[0]
-  };
+  const user = await User.findById(req.session.userId);
 
-  user.goalsHistory.push(newGoal);
-  user.goalCurrentlyActive = 1;
+  const activeGoal = user.goalsHistory[user.goalsHistory.length - 1];
+
+  if (activeGoal && activeGoal._id.toString() === id) {
+    user.goalCurrentlyActive = 0;
+  }
+
+  user.goalsHistory = user.goalsHistory.filter(goal => goal._id.toString() !== id);
   await user.save();
 
-  return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'});
+  res.status(200).json({ 
+    message: 'Goal deleted successfully',
+    remainingGoals: user.goalsHistory
+  });
 });

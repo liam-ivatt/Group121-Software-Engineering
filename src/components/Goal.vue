@@ -7,9 +7,11 @@
     </div>
     <div class="current-goals">
         <ul>
-          <li v-for="(goal, index) in goals" :key="index">
+          <li v-if="goals.length === 0 || goals.goalCurrentlyActive === 0">Goals History</li>
+          <li v-for="goal in goals" :key="goal.goal">
             <h3>{{ goal.goal }}</h3>
             <p>Target: {{ goal.target }}</p>
+            <p>End date: {{ goal.endDate }}</p>
           </li>
         </ul>
     </div>
@@ -43,13 +45,18 @@ export default {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    
-                    this.goals = data.goalsHistory.map(goal => {
-                        return {
-                            goal: goal.goalName,
-                            target: goal.targetWeight,
-                        }
-                    });
+
+                    if (data.goalsHistory && data.goalsHistory.length > 0) {
+                    const currentGoal = data.goalsHistory[data.goalsHistory.length - 1];
+
+                    this.goals = [{
+                        goal: currentGoal.goalName,
+                        target: currentGoal.targetWeight,
+                        endDate: new Date(currentGoal.targetDate).toLocaleDateString(),
+                    }];
+                    } else {
+                        this.goals = [];
+                    }
 
                 } else {
                     console.error('Error fetching user data');

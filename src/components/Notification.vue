@@ -1,7 +1,7 @@
 <template>
     <Modal v-if="showModal" @close="toggleModal" />
     <div>
-        <h1 class="header">Log your weight for this week!</h1>
+        <h1 class="header">Log your weight for today!</h1>
         <button class="profile" @click="toggleModal">Log Weight</button>
     </div>
     
