@@ -132,7 +132,8 @@ export default {
                     this.msg = data.message;
                     this.isError = false;
                     this.members = this.members.filter(member => member._id !== userId);
-                    this.$emit('removeUser')
+                    this.$emit('removeUser');
+                    this.getGroup();
                 } else {
                     this.msg = data.message;
                     this.isError = true;
@@ -172,17 +173,19 @@ export default {
                 this.msg = "Failed to invite user";
                 this.isError = true;
             }
+        },
+        getGroup() {
+            if (this.group) {
+                this.groupName = this.group.name;
+                this.groupId = this.group.id;
+                this.ownerId = this.group.ownerId;
+                this.members = this.group.members
+                this.joinCode = this.group.joinCode
+            }
         }
     },
     created() {
-        if (this.group) {
-            this.groupName = this.group.name;
-            this.groupId = this.group.id;
-            this.ownerId = this.group.ownerId;
-            this.members = this.group.members
-            this.joinCode = this.group.joinCode
-        }
-
+        this.getGroup();
     }
 }
 </script>

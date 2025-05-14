@@ -4,7 +4,9 @@
     <ManageGroupModal v-if="showManageModal" @close="toggleManageModal"
     @removeUser="getGroups"
     :group="selectedGroup"/>
-    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" :group="selectedGroup"/>
+    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" 
+    @leaveGroup="getGroups"
+    :group="selectedGroup"/>
     <div class="group">
         <div class="group-header">
             <h1>Your Groups</h1>
@@ -123,25 +125,6 @@ export default {
                 console.error("Error joining group");
             }
         },
-        async leaveGroup(id) {
-
-            const res = await fetch('http://localhost:5000/leave-group', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ id }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                this.getGroups();
-            } else {
-                console.error("Error leaving group");
-            }
-        }
     },
     mounted() {
         this.getGroups();

@@ -10,6 +10,7 @@
                 <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
                 <div class="form-group">
                     <button type="submit" @click="inviteUser">Invite User</button>
+                    <button type="submit" @click="leaveGroup" class="delete">Leave Group</button>
                 </div>
             </form>
 
@@ -53,92 +54,7 @@ export default {
         closeModal() {
             this.$emit('close');
         },
-        async updateGroup() {
-            try {
-                const res = await fetch('http://localhost:5000/update-group', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ 
-                        groupId: this.groupId,
-                        groupName: this.groupName 
-                    }),
-                });
-                
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.msg = data.message;
-                    this.isError = false;
-                } else {
-                    this.msg = data.message;
-                    this.isError = true;
-                }
-            } catch (error) {
-                console.error("Error updating group:", error);
-                this.msg = "Failed to update group";
-                this.isError = true;
-            }
-        },
-        async removeGroup() {
-            try {
-                const res = await fetch('http://localhost:5000/delete-group', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ groupId: this.groupId }),
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.msg = data.message;
-                    this.isError = false;
-                    this.closeModal();
-                } else {
-                    this.msg = data.message;
-                    this.isError = true;
-                }
-            } catch (error) {
-                console.error("Error deleting group:", error);
-                this.msg = "Failed to delete group";
-                this.isError = true;
-            }
-        },
-        async removeUser(userId) {
-            try {
-                const res = await fetch('http://localhost:5000/delete-group-member', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ userId, groupId: this.groupId }),
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    this.msg = data.message;
-                    this.isError = false;
-                    this.members = this.members.filter(member => member._id !== userId);
-                    this.$emit('removeUser')
-                } else {
-                    this.msg = data.message;
-                    this.isError = true;
-                }
-            } catch (error) {
-                console.error("Error removing user:", error);
-                this.msg = "Failed to remove user";
-                this.isError = true;
-            }
-        },
         async inviteUser() {
-
             try {
                 const res = await fetch('http://localhost:5000/invite-group-member', {
                     method: 'POST',
@@ -166,17 +82,38 @@ export default {
                 this.msg = "Failed to invite user";
                 this.isError = true;
             }
+        },
+        async leaveGroup() {
+            const res = await fetch('http://localhost:5000/leave-group', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ id: this.groupId }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                this.$emit('leaveGroup')
+                this.$emit('close')
+            } else {
+                console.error("Error leaving group");
+            }
+        },
+        getGroup() {
+            if (this.group) {
+                this.groupName = this.group.name;
+                this.groupId = this.group.id;
+                this.ownerId = this.group.ownerId;
+                this.members = this.group.members
+                this.joinCode = this.group.joinCode
+            }
         }
     },
     created() {
-        if (this.group) {
-            this.groupName = this.group.name;
-            this.groupId = this.group.id;
-            this.ownerId = this.group.ownerId;
-            this.members = this.group.members
-            this.joinCode = this.group.joinCode
-        }
-
+        this.getGroup();
     }
 }
 </script>

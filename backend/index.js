@@ -470,3 +470,88 @@ app.post('/suggest-goal', async(req,res) => {
 
   return res.status(201).json({message:'Goal successfully created - Well done, and good luck!'});
 });
+
+//Food CRUD
+//Create a new meal
+app.post('/meals', async (req, res) => {
+  try {
+    const { name, calories } = req.body;
+
+    if (!name || !calories) {
+      return res.status(400).json({ message: 'Meal name and calorie amount required' });
+    }
+    
+    const meal = new Foods({
+      name,
+      calories,
+      user: req.session.userId
+    });
+
+    await meal.save();
+    res.status(201).json(meal);
+  }
+  catch (error) {
+    console.error("Error creating meal:", error);
+    res.status(500).json({ message: 'Error creating meal' });
+  }
+});
+
+//Delete meal 
+app.delete('/meals/:id', async (req, res) => {
+  try {
+    const meal = await Foods.findOneAndDelete({
+      _id: req.params.id,
+      user: req.session.userId
+    });
+    
+    if (!meal) {
+      return res.status(404).json({ message: 'Meal not found' });
+    }
+
+    res.json({ message: 'Meal deleted successfully' });
+  } 
+  catch (error) {
+    console.error("Error deleting meal:", error);
+    res.status(500).json({ message: 'Error deleting meal' });
+  }
+});
+
+//Get meals today and calorie amount
+app.get('/meals/today', async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const meals = await Foods.find({
+      user: req.session.userId,
+      creationDate: { $gte: today }
+    });
+    
+    const totalCals = meals.reduce((sum, meal) => sum + meal.calories, 0);
+
+    res.json({
+      count: meals.length,
+      totalCals,
+      meals
+    });
+  }
+  catch (error) {
+    console.error("Error fetching today's meals:", error);
+    res.status(500).json({ message: 'Error fetching daily meals' });
+  }
+});
+
+//Get all meals 
+app.get('/meals', async (req, res) => {
+  try {
+    const meals = await Foods.find({ 
+      user: req.session.userId 
+    }).sort({ creationDate: -1 });
+    
+    res.json(meals);
+  }
+  catch (error) {
+    console.error("Error fetching meals:", error);
+    res.status(500).json({ message: 'Error fetching meals' });
+  }
+});
