@@ -2,6 +2,7 @@
     <Modal v-if="showModal" @close="toggleModal" />
     <div>
         <h1 class="header">Welcome, {{ firstName }}</h1>
+        <button class="Home" @click="goHome">Home</button>
         <button class="group" @click="$router.push('/group')">Groups</button>
         <button class="profile" @click="toggleModal">Profile</button>
         <button class="logout" @click="handleLogout">Log out</button>
@@ -53,6 +54,9 @@ export default {
                 console.error('Error:', error);
             }
         },
+         goHome () {
+            this.$router.push({ name: 'home' })
+  },
     },
 }
 
@@ -77,6 +81,24 @@ div {
     border-top-right-radius: 0px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+.Home {
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 10px;
+    color: black;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    transition-duration: 0.4s;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.Home:hover {
+    background-color: #eee;
+}
+
 
 .logout {
     background-color: white;
