@@ -2,9 +2,10 @@
     <Modal v-if="showModal" @close="toggleModal" />
     <div>
         <h1 class="header">Welcome, {{ firstName }}</h1>
+        <button class="Home" @click="$router.push('/')">Home</button>
         <button class="group" @click="$router.push('/group')">Groups</button>
         <button class="profile" @click="toggleModal">Profile</button>
-        <button class="logout" @click="handleLogout">Log out</button>
+        <button class="logout" @click="handleLogout">Log Out</button>
     </div>
     
 </template>
@@ -77,25 +78,42 @@ div {
     border-top-right-radius: 0px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
-
-.logout {
+.Home {
     background-color: white;
     border: 1px solid #c1c1c1;
     border-radius: 10px;
     color: black;
-    background-color: #fc4747;
     padding: 15px 20px;
     text-align: center;
     text-decoration: none;
     font-size: 15px;
     transition-duration: 0.4s;
+    margin-right: 10px;
     cursor: pointer;
-    margin-left: 10px;
-    float: right;
+}
+
+.Home:hover {
+    background-color: #eee;
+}
+
+
+.logout {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border: 1px solid #c1c1c1;
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    transition-duration: 0.4s;
+    margin: 5px;
 }
 
 .logout:hover {
-    background-color: #eee;
+    background-color: #ff5252;
 }
 
 .profile {

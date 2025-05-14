@@ -4,9 +4,11 @@ const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 const User = require('./models/User');
 const Group = require('./models/Group');
+const Foods = require('./models/Foods')
 
 const app = express();
 const PORT = 5000;
@@ -40,6 +42,32 @@ app.use(session({
   store: store,
   cookie: { httpOnly: true, secure: false, maxAge: 1000 * 60 * 60 }
 }));
+
+async function sendEmail(to, subject, text) {
+
+  html = `<h1>Health Tracker App</h1>
+          <p>You've been invited to a group! Enter ${text} to join!`
+
+  const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: "healthtrackeruea@gmail.com",
+    pass: "rhnl usem pzqa fxcj",
+  },
+  });
+
+  const info = await transporter.sendMail({
+
+    from: "Health Tracker <info@healthtracker.uea.ac.uk>",
+    to: to,
+    subject: subject,
+    html: html,
+
+  })
+
+}
 
 // Register new user
 app.post('/register', async (req, res) => {
@@ -101,27 +129,12 @@ app.post('/logout', (req, res) => {
 // Update Profile
 app.post('/update-profile', async (req, res) => {
 
-  const { email, height, weight } = req.body;
-
-  if (weight && (weight < 0 || weight > 500)) {
-    return res.status(400).json({ message: 'Weight must be between 0KG and 500KG' });
-  }
+  const { email, height} = req.body;
 
   const user = await User.findById(req.session.userId);
 
   user.email = email || user.email;
   user.height = height || user.height;
-  user.weight = weight || user.weight;
-
-  // Recalculate BMI and update weight history
-  if (weight || height) {
-    user.bmi = user.weight / ((user.height / 100) ** 2);
-  }
-
-  // Update weight history
-  if (weight) {
-    user.weightHistory.push({ weight: weight, date: new Date() });
-  }
 
   await user.save()
 
@@ -240,6 +253,11 @@ app.post('/create-group', async(req,res) => {
   const { groupName } = req.body;
   const user = await User.findById(req.session.userId);
 
+  const existingGroup = await Group.findOne({ groupName });
+  if (existingGroup) {
+    return res.status(400).json({ message: 'Group name already exists' });
+  }
+
   const group = new Group({
     groupName,
     groupOwner: user._id,
@@ -257,8 +275,8 @@ app.get('/get-groups', async(req,res) => {
 
     const groups = await Group.find({ 
       groupMembers: req.session.userId 
-    }).populate('groupOwner', 'userName firstName lastName')
-      .populate('groupMembers', 'userName firstName lastName');
+    }).populate('groupOwner', 'userName firstName lastName email')
+      .populate('groupMembers', 'userName firstName lastName email');
 
     const formattedGroups = groups.map(group => {
       return {
@@ -266,6 +284,8 @@ app.get('/get-groups', async(req,res) => {
           name: group.groupName,
           userId: req.session.userId,
           ownerId: group.groupOwner._id,
+          members: group.groupMembers,
+          joinCode: group.joinCode
       }
     });
 
@@ -278,7 +298,7 @@ app.delete('/delete-group', async(req,res) => {
 
   const group = await Group.findById(groupId);
 
-  if (group.groupOwner.toString() !== req.session.userId) {
+  if (group.groupOwner.toString() !== req.session.userId.toString()) {
     return res.status(403).json({ message: 'Only the group owner can delete this group' });
   }
 
@@ -305,6 +325,26 @@ app.post('/join-group', async(req,res) => {
   group.groupMembers.push(user._id);
   await group.save();
 
+  res.status(200).json({ message: "Group joined successfully"})
+
+});
+
+app.post('/update-group', async(req,res) => {
+  const { groupId, groupName } = req.body;
+
+    const existingGroup = await Group.findOne({ groupName });
+  if (existingGroup) {
+    return res.status(400).json({ message: 'Group name already exists' });
+  }
+
+  const group = await Group.findById(groupId);
+
+  group.groupName = groupName || group.groupName;
+
+  await group.save();
+
+  res.status(200).json({ message: 'Group updated successfully' });
+  
 });
 
 app.post('/leave-group', async(req,res) => {
@@ -324,6 +364,33 @@ app.post('/leave-group', async(req,res) => {
   await group.save();  
   res.status(200).json({ message: 'Left group successfully' });
 
+});
+
+app.delete('/delete-group-member', async(req,res) => {
+  const { groupId, userId } = req.body;
+
+  const group = await Group.findById(groupId);
+  const user = await User.findById(userId);
+
+  group.groupMembers = group.groupMembers.filter(
+    member => !member.equals(user._id)
+  );
+
+  await group.save();
+});
+
+app.post('/invite-group-member', async(req,res) => {
+  const { joinCode, userEmail } = req.body;
+
+  const existingUser = await User.findOne({ email: userEmail });
+
+  if (!existingUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  await sendEmail(userEmail, 'Group Invite', joinCode);
+
+  res.status(200).json({ message: 'Invite sent successfully' });
 });
 
 //GOAL SUGGESTION
@@ -409,3 +476,144 @@ app.delete('/delete-goal', async (req, res) => {
     remainingGoals: user.goalsHistory
   });
 });
+
+//Food CRUD
+//Create a new meal
+app.post('/meals', async (req, res) => {
+  try {
+    const { name, calories } = req.body;
+
+    if (!name || !calories) {
+      return res.status(400).json({ message: 'Meal name and calorie amount required' });
+    }
+    
+    const meal = new Foods({
+      name,
+      calories,
+      user: req.session.userId
+    });
+
+    await meal.save();
+    res.status(201).json(meal);
+  }
+  catch (error) {
+    console.error("Error creating meal:", error);
+    res.status(500).json({ message: 'Error creating meal' });
+  }
+});
+
+//Delete meal 
+app.delete('/meals/:id', async (req, res) => {
+  try {
+    const meal = await Foods.findOneAndDelete({
+      _id: req.params.id,
+      user: req.session.userId
+    });
+    
+    if (!meal) {
+      return res.status(404).json({ message: 'Meal not found' });
+    }
+
+    res.json({ message: 'Meal deleted successfully' });
+  } 
+  catch (error) {
+    console.error("Error deleting meal:", error);
+    res.status(500).json({ message: 'Error deleting meal' });
+  }
+});
+
+//Get meals today and calorie amount
+app.get('/meals/today', async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const meals = await Foods.find({
+      user: req.session.userId,
+      creationDate: { $gte: today }
+    });
+    
+    const totalCals = meals.reduce((sum, meal) => sum + meal.calories, 0);
+
+    res.json({
+      count: meals.length,
+      totalCals,
+      meals
+    });
+  }
+  catch (error) {
+    console.error("Error fetching today's meals:", error);
+    res.status(500).json({ message: 'Error fetching daily meals' });
+  }
+});
+
+//Get all meals 
+app.get('/meals', async (req, res) => {
+  try {
+    const meals = await Foods.find({ 
+      user: req.session.userId 
+    }).sort({ creationDate: -1 });
+    
+    res.json(meals);
+  }
+  catch (error) {
+    console.error("Error fetching meals:", error);
+    res.status(500).json({ message: 'Error fetching meals' });
+  }
+});
+
+//Weight CRUD
+app.post('/set-weight', async (req, res) => {
+
+  const { weight } = req.body
+
+    if (weight && (weight < 0 || weight > 500)) {
+    return res.status(400).json({ message: 'Weight must be between 0KG and 500KG' });
+  }
+
+  const user = await User.findById(req.session.userId)
+
+  user.weight = weight
+  
+  if (weight) {
+    user.bmi = user.weight / ((user.height / 100) ** 2);
+    user.weightHistory.push({ weight: weight, date: new Date() });
+  }
+
+  res.status(200).json({ message: "Weight set successfully!" });
+
+  await user.save()
+})
+
+app.delete('/delete-weight', async (req, res) => {
+
+  const { id } = req.body;
+
+  await User.findByIdAndUpdate(
+    req.session.userId,
+    { $pull: { weightHistory: { _id: id } } },
+    { new: true }
+  );
+
+  res.status(200).json({ 
+    message: 'Weight deleted successfully',
+  });
+
+});
+
+app.post('/update-weight', async (req, res) => {
+
+  const { weight } = req.body
+
+  const user = await User.findById(req.session.userId)
+
+  user.weight = weight
+  
+  if (weight) {
+    user.bmi = user.weight / ((user.height / 100) ** 2);
+  }
+
+  res.status(200).json({ message: "Weight set successfully!" });
+
+  await user.save()
+})

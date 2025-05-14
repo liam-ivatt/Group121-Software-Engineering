@@ -1,50 +1,48 @@
-    <template>
-        <div class="backdrop" @click.self="closeModal">
-            <div class="modal">
-                <form>
-                    <h1>Edit Profile</h1>
-                    <div class="form-group">
-                        <label>Email:</label>
-                        <input type="email" v-model="email">
-                    </div>  
-                    <div class="form-group">
-                        <label>Height (CM):</label>
-                        <input type="number" v-model="height">
-                        <label>Weight (KG):</label>
-                        <input type="number" v-model="weight">
-                    </div>
-                <div>
-                    <p v-if="msg">{{ msg }}</p>
-                    <button @click="handleSubmit">Submit</button>
+<template>
+    <div class="backdrop" @click.self="closeModal">
+        <div class="modal">
+            <form>
+                <h1>Edit Profile</h1>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" v-model="email">
+                </div>  
+                <div class="form-group">
+                    <label>Height (CM):</label>
+                    <input type="number" v-model="height">
                 </div>
-                </form>
+            <div>
+                <p v-if="msg">{{ msg }}</p>
+                <button @click="handleSubmit">Submit</button>
             </div>
+            </form>
         </div>
-    </template>
+    </div>
+</template>
 
 
 
-    <script>
-    export default {
-        data() {
-            return {
-                msg: '',
-                email: '',
-                height: '',
-                weight: '',
-                name: '',
-            }
+<script>
+export default {
+    data() {
+        return {
+            msg: '',
+            email: '',
+            height: '',
+            weight: '',
+            name: '',
+        }
+    },
+
+    methods: {
+        closeModal() {
+            this.$emit('close')
         },
 
-        methods: {
-            closeModal() {
-                this.$emit('close')
-            },
+        async handleSubmit(event) {
 
-            async handleSubmit(event) {
-
-                event.preventDefault(); // Prevent the default form submission
-                this.errData = ''; // Clear any previous error message
+            event.preventDefault();
+            this.errData = '';
 
                 const res = await fetch('http://localhost:5000/update-profile', {
                     method: 'POST',
@@ -70,100 +68,102 @@
                 }
             },
 
-            async getUserData() {
+        async getUserData() {
 
-                const res = await fetch('http://localhost:5000/user', {
-                    method: 'GET',
-                    credentials: 'include',
-                });
+            const res = await fetch('http://localhost:5000/user', {
+                method: 'GET',
+                credentials: 'include',
+            });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    this.email = data.email;
-                    this.height = data.height;
-                    this.weight = data.weight;
-                    this.name = data.firstName.charAt(0).toUpperCase() + data.firstName.slice(1);
-                } else {
-                    console.error('Error fetching user data');
-                }
-
+            if (res.ok) {
+                const data = await res.json();
+                this.email = data.email;
+                this.height = data.height;
+                this.weight = data.weight;
+                this.name = data.firstName.charAt(0).toUpperCase() + data.firstName.slice(1);
+            } else {
+                console.error('Error fetching user data');
             }
-        },
-        mounted() {
-            this.getUserData();
+
         }
+    },
+    mounted() {
+        this.getUserData();
     }
+}
 
-    </script>
+</script>
 
-    <style scoped>
+<style scoped>
 
-    .modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        max-height: 90vh;
-        overflow-y: auto;
-        width: 400px;
-        padding: 20px;
-        background: white;
-        border-radius: 10px;
-    }   
-    .backdrop {
-        top: 0;
-        position: fixed;
-        background: rgba(0,0,0,0.5);
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-    }
-
-    form {
-    width: 300px;
-    margin: 20px auto;
-    }
-
-    label {
-    display: block;
-    margin: 20px 0 10px;
-    }
-
-    input {
-    width: 100%;
-    padding: 10px;
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 400px;
+    padding: 20px;
+    background: white;
     border-radius: 10px;
-    border: 1px solid #eee;
-    outline: none;
-    margin: 10px auto;
-    
-    }
+}   
+.backdrop {
+    top: 0;
+    position: fixed;
+    background: rgba(0,0,0,0.5);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
 
-    form h1 {
-        display: block;
-        text-align: center;
-        padding-bottom: 10px;
-    }   
+form {
+width: 300px;
+margin: 20px auto;
+}
 
-    form button {
-        background-color: white;
-        border: 1px solid #c1c1c1;
-        border-radius: 10px;
-        padding: 15px 20px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 15px;
-        transition-duration: 0.4s;
-        cursor: pointer;
-        margin: 20px auto 0;
-        display: block;
-    }
+label {
+display: block;
+margin: 20px 0 10px;
+}
 
-    form button:hover {
-        background-color: #eee;
-    }
+input {
+width: 100%;
+padding: 10px;
+border-radius: 10px;
+border: 1px solid #eee;
+outline: none;
+margin: 10px auto;
+
+}
+
+form h1 {
+    display: block;
+    text-align: center;
+    padding-bottom: 10px;
+}   
+
+form button {
+    background-color: white;
+    border: 1px solid #c1c1c1;
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    margin: 20px auto 0;
+    display: block;
+}
+
+form button:hover {
+    background-color: #eee;
+}
 
 
-    </style>
+
+
+</style>
 

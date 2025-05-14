@@ -8,7 +8,7 @@
                     <input v-model="groupName" type="text" placeholder="Name" required>
                 </div>  
             <div>
-                <p v-if="msg">{{ msg }}</p>
+                <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
                 <button type="submit">Submit</button>
             </div>
             </form>
@@ -22,7 +22,8 @@ export default {
     data() {
         return {
             groupName: '',
-            msg: ''
+            msg: '',
+            isError: false
         }
     },
     methods: {
@@ -43,9 +44,10 @@ export default {
 
             if (res.ok) {
                 this.msg = data.message;
+                this.isError = false;
             } else {
-                const errData = await res.json();
-                this.msg = errData.message;
+                this.msg = data.message
+                this.isError = true;
             }
         },
     }
@@ -123,6 +125,16 @@ form button:hover {
 
 h1 {
     width : 110%;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
 }
 
 

@@ -1,7 +1,12 @@
 <template>
     <Navigation />
     <CreateGroupModal v-if="showCreateModal" @close="toggleCreateModal" />
-    <ManageGroupModal v-if="showManageModal" @close="toggleManageModal" />
+    <ManageGroupModal v-if="showManageModal" @close="toggleManageModal"
+    @removeUser="getGroups"
+    :group="selectedGroup"/>
+    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" 
+    @leaveGroup="getGroups"
+    :group="selectedGroup"/>
     <div class="group">
         <div class="group-header">
             <h1>Your Groups</h1>
@@ -17,8 +22,9 @@
                 <li v-for="(group, index) in groups" :key="index">
                     <h3>{{ group.name }}</h3>
                     <p v-if="group.isOwner">You are the owner of this group</p>
-                    <button v-if="group.isOwner" class="new-group" @click="toggleManageModal">Manage</button>
-                    <button v-else class="new-group" @click="leaveGroup(group.id)">Leave</button>
+                    <p v-else>Member</p>
+                    <button v-if="group.isOwner" class="new-group" @click="manageGroup(group)">Manage</button>
+                    <button v-else class="new-group" @click="manageUserGroup(group)">View</button>
                 </li>
             </ul>
         </div>
@@ -32,20 +38,23 @@
 import Navigation from '../components/Navigation.vue'
 import CreateGroupModal from '@/components/CreateGroupModal.vue';
 import ManageGroupModal from '@/components/ManageGroupModal.vue';
+import ManageUserModal from '@/components/ManageUserModal.vue';
 
 export default {
     data() {
         return {
             showCreateModal: false,
             showManageModal: false,
+            showUserModal: false,
             groups: [],
             joinErr: '',
             createErr: '',
             joinCode: '',
+            selectedGroup: null,
         }
     },
     components: {
-        Navigation, CreateGroupModal, ManageGroupModal
+        Navigation, CreateGroupModal, ManageGroupModal, ManageUserModal
     },
     methods: {
         toggleCreateModal() {
@@ -53,6 +62,17 @@ export default {
         },
         toggleManageModal() {
             this.showManageModal = !this.showManageModal
+        },
+        toggleManageUserModal() {
+            this.showUserModal = !this.showUserModal
+        },
+        manageUserGroup(group) {
+            this.selectedGroup = group;
+            this.toggleManageUserModal();
+        },
+        manageGroup(group) {
+            this.selectedGroup = group;
+            this.toggleManageModal();
         },
         async getGroups() {
             const res = await fetch('http://localhost:5000/get-groups', {
@@ -64,6 +84,7 @@ export default {
             });
 
             if (res.ok) {
+
                 const data = await res.json();
 
                 this.groups = data.formattedGroups.map(group => {
@@ -71,9 +92,13 @@ export default {
                         id: group.id,
                         name: group.name,
                         isOwner: group.ownerId === group.userId,
+                        ownerId: group.ownerId,
                         members: group.members,
+                        joinCode: group.joinCode
                     }
                 });
+
+                console.log(this.groups);
             
             } else {
                 console.error("Error fetching groups");
@@ -93,30 +118,13 @@ export default {
 
             if (res.ok) {
                 this.getGroups();
+                this.joinCode = '';
+                this.joinErr = '';
             } else {
                 this.joinErr = data.message;
                 console.error("Error joining group");
             }
         },
-        async leaveGroup(id) {
-
-            const res = await fetch('http://localhost:5000/leave-group', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ id }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                this.getGroups();
-            } else {
-                console.error("Error leaving group");
-            }
-        }
     },
     mounted() {
         this.getGroups();
@@ -172,6 +180,11 @@ h1 {
     background-color: #eee;
 }
 
+.error {
+    color: red;
+    margin: 0;
+}
+
 ul {
     list-style-type: none; 
     padding: 0; 
@@ -187,15 +200,50 @@ input {
 }
 
 .group-list {
-    padding: 20px;
-    border: 1px solid #c1c1c1;
     width: 100%;
+    padding: 10px;
     box-sizing: border-box;
     margin: 0 auto;
-    border-radius: 10px;
-    height: 300px;
+    height: auto;
+    max-height: 500px;
     overflow-y: auto;
-    overflow-x: hidden;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.group-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+.group-list li {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.group-list h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.group-list p {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 15px 0;
+}
+
+.group-list button {
+    margin-top: 10px;
+    width: 100%;
 }
 
 </style>

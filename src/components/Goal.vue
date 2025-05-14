@@ -100,6 +100,18 @@ h1 {
 .current-goals {
     float: left;
 }
+.current-goals ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.current-goals li{
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;  
+}
+
 
 .addGoal {
   background-color: white;
