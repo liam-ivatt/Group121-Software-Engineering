@@ -266,6 +266,11 @@ app.post('/create-group', async(req,res) => {
   const { groupName } = req.body;
   const user = await User.findById(req.session.userId);
 
+  const existingGroup = await Group.findOne({ groupName });
+  if (existingGroup) {
+    return res.status(400).json({ message: 'Group name already exists' });
+  }
+
   const group = new Group({
     groupName,
     groupOwner: user._id,
@@ -340,9 +345,15 @@ app.post('/join-group', async(req,res) => {
 app.post('/update-group', async(req,res) => {
   const { groupId, groupName } = req.body;
 
+    const existingGroup = await Group.findOne({ groupName });
+  if (existingGroup) {
+    return res.status(400).json({ message: 'Group name already exists' });
+  }
+
   const group = await Group.findById(groupId);
 
   group.groupName = groupName || group.groupName;
+
   await group.save();
 
   res.status(200).json({ message: 'Group updated successfully' });

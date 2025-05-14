@@ -2,7 +2,7 @@
     <Modal v-if="showModal" @close="toggleModal" />
     <div>
         <h1 class="header">Welcome, {{ firstName }}</h1>
-        <button class="Home" @click="goHome">Home</button>
+        <button class="Home" @click="$router.push('/')">Home</button>
         <button class="group" @click="$router.push('/group')">Groups</button>
         <button class="profile" @click="toggleModal">Profile</button>
         <button class="logout" @click="handleLogout">Log out</button>
@@ -54,9 +54,6 @@ export default {
                 console.error('Error:', error);
             }
         },
-         goHome () {
-            this.$router.push({ name: 'home' })
-  },
     },
 }
 

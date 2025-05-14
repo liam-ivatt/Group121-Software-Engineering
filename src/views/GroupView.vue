@@ -4,6 +4,7 @@
     <ManageGroupModal v-if="showManageModal" @close="toggleManageModal"
     @removeUser="getGroups"
     :group="selectedGroup"/>
+    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" :group="selectedGroup"/>
     <div class="group">
         <div class="group-header">
             <h1>Your Groups</h1>
@@ -21,7 +22,7 @@
                     <p v-if="group.isOwner">You are the owner of this group</p>
                     <p v-else>Member</p>
                     <button v-if="group.isOwner" class="new-group" @click="manageGroup(group)">Manage</button>
-                    <button v-else class="new-group" @click="leaveGroup(group.id)">Leave</button>
+                    <button v-else class="new-group" @click="manageUserGroup(group)">View</button>
                 </li>
             </ul>
         </div>
@@ -35,12 +36,14 @@
 import Navigation from '../components/Navigation.vue'
 import CreateGroupModal from '@/components/CreateGroupModal.vue';
 import ManageGroupModal from '@/components/ManageGroupModal.vue';
+import ManageUserModal from '@/components/ManageUserModal.vue';
 
 export default {
     data() {
         return {
             showCreateModal: false,
             showManageModal: false,
+            showUserModal: false,
             groups: [],
             joinErr: '',
             createErr: '',
@@ -49,7 +52,7 @@ export default {
         }
     },
     components: {
-        Navigation, CreateGroupModal, ManageGroupModal
+        Navigation, CreateGroupModal, ManageGroupModal, ManageUserModal
     },
     methods: {
         toggleCreateModal() {
@@ -57,6 +60,13 @@ export default {
         },
         toggleManageModal() {
             this.showManageModal = !this.showManageModal
+        },
+        toggleManageUserModal() {
+            this.showUserModal = !this.showUserModal
+        },
+        manageUserGroup(group) {
+            this.selectedGroup = group;
+            this.toggleManageUserModal();
         },
         manageGroup(group) {
             this.selectedGroup = group;
