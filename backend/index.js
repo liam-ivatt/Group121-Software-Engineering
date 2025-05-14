@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 
 const User = require('./models/User');
 const Group = require('./models/Group');
+const Foods = require('./models/Foods')
 
 const app = express();
 const PORT = 5000;
@@ -128,27 +129,12 @@ app.post('/logout', (req, res) => {
 // Update Profile
 app.post('/update-profile', async (req, res) => {
 
-  const { email, height, weight } = req.body;
-
-  if (weight && (weight < 0 || weight > 500)) {
-    return res.status(400).json({ message: 'Weight must be between 0KG and 500KG' });
-  }
+  const { email, height} = req.body;
 
   const user = await User.findById(req.session.userId);
 
   user.email = email || user.email;
   user.height = height || user.height;
-  user.weight = weight || user.weight;
-
-  // Recalculate BMI and update weight history
-  if (weight || height) {
-    user.bmi = user.weight / ((user.height / 100) ** 2);
-  }
-
-  // Update weight history
-  if (weight) {
-    user.weightHistory.push({ weight: weight, date: new Date() });
-  }
 
   await user.save()
 
@@ -555,3 +541,59 @@ app.get('/meals', async (req, res) => {
     res.status(500).json({ message: 'Error fetching meals' });
   }
 });
+
+//Weight CRUD
+app.post('/set-weight', async (req, res) => {
+
+  const { weight } = req.body
+
+    if (weight && (weight < 0 || weight > 500)) {
+    return res.status(400).json({ message: 'Weight must be between 0KG and 500KG' });
+  }
+
+  const user = await User.findById(req.session.userId)
+
+  user.weight = weight
+  
+  if (weight) {
+    user.bmi = user.weight / ((user.height / 100) ** 2);
+    user.weightHistory.push({ weight: weight, date: new Date() });
+  }
+
+  res.status(200).json({ message: "Weight set successfully!" });
+
+  await user.save()
+})
+
+app.delete('/delete-weight', async (req, res) => {
+
+  const { id } = req.body;
+
+  await User.findByIdAndUpdate(
+    req.session.userId,
+    { $pull: { weightHistory: { _id: id } } },
+    { new: true }
+  );
+
+  res.status(200).json({ 
+    message: 'Weight deleted successfully',
+  });
+
+});
+
+app.post('/update-weight', async (req, res) => {
+
+  const { weight } = req.body
+
+  const user = await User.findById(req.session.userId)
+
+  user.weight = weight
+  
+  if (weight) {
+    user.bmi = user.weight / ((user.height / 100) ** 2);
+  }
+
+  res.status(200).json({ message: "Weight set successfully!" });
+
+  await user.save()
+})

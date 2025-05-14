@@ -1,48 +1,20 @@
 <template>
     <Navigation />
     <Notification v-if="showNotification"/>
-    <div class="dashboard">
-        <h1>Dashboard</h1>
-        <div class="chart-container">
-            <Line :data="data" :options="options" :height="200"/>
-        </div>
-        <p>Your BMI is currently {{ bmi }}</p>
-    </div>
+    <Dashboard />
     <Goals />
     <Foods />
     <Exercises />
 </template>
 
 <script>
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
-
 // Component imports
 import Navigation from '../components/Navigation.vue'
 import Goals from '../components/Goal.vue'
 import Foods from '../components/Food.vue'
 import Exercises from '../components/Exercise.vue'
-import Notification from '@/components/Notification.vue'
+import Notification from '../components/Notification.vue'
+import Dashboard from '../components/Dashboard.vue'
 
 export default {
  components: {
@@ -51,94 +23,22 @@ export default {
     Foods,
     Exercises,
     Notification,
-    Line
+    Dashboard,
  },
- methods: {
-    toggleModal() {
-            this.showModal = !this.showModal
-        },
-        async getUserData() {
-            try {
-                const res = await fetch('http://localhost:5000/user', {
-                    method: 'GET',
-                    credentials: 'include',  
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    this.userData = data;
-                    this.bmi = data.bmi.toFixed(2);
 
-                    if (data.weightHistory) {
-                        this.data = {
-                        labels: data.weightHistory.map(entry => new Date(entry.date).toLocaleDateString()),
-                        datasets: [
-                            {
-                                label: 'Weight History',
-                                data: data.weightHistory.map(entry => entry.weight)
-                            }
-                            ]
-                        };
-                    } 
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        },
-        async checkDay() {
-            if (!this.userData) {
-                console.error('User data not loaded yet');
-                return;
-            }
-
-                if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0){
-                    const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
-                    
-                    const today = new Date();
-                    const targetDate = new Date(activeGoal.targetDate);
-                    
-                    this.showNotification = today >=targetDate;
-                } else {
-                    this.showNotification = false;
-                }
-        }
-    },
   data() {
     return {
-      showModal: false,
-      showNotification: true,
-      bmi: "",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Weight History',
-            backgroundColor: '#f7c8f3',
-            borderColor: 'purple',
-            borderWidth: 1,
-            data: []
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-            padding: {
-                left: 50,
-                right: 50
-            }
-        },
-      }    
+        showNotification: null,
     }
   },
-    created() {
-        this.getUserData();
-    },
-    mounted() {
-        this.checkDay();
-    },
-}
+  methods: {
 
+    checkDay() {
+        
+    }
+
+  }
+}
 </script>
 
 <style scoped>

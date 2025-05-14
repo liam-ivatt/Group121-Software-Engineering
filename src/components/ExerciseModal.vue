@@ -118,7 +118,8 @@ export default {
             });
 
             if (res.ok) {
-                await this.getUserData(); 
+                await this.getUserData();
+                this.$emit('deleteExercise')
             } else {
                 console.error('Error deleting exercise');
             }

@@ -1,12 +1,12 @@
 <template>
-    <ExerciseModal v-if="showModal" @close="toggleModal" />
+    <ExerciseModal v-if="showModal" @close="toggleModal" @deleteExercise="getUserData" />
     <div class="exercise">
       <div class="exercise-header">
         <h1>Exercise</h1>
         <button class="addExercise" @click="toggleModal">Add/Remove Activities</button>
       </div>
       <div class="current-exercises">
-        <h2>Todays Activities</h2>
+        <h2>Today's Activities</h2>
 
         <div class="exercise-list">
           <ul>
@@ -87,7 +87,7 @@
     flex-direction: column; 
     padding: 20px;
     background-color: white;
-    width: 50%;
+    width: 40%;
     margin: 0 auto;
     margin-bottom: 20px;
     border-radius: 10px;
@@ -123,10 +123,42 @@
     background-color: #eee;
   }
 
-  ul {
-    list-style-type: none; 
-    padding: 0; 
-  }
+  .exercise-list {
+    padding: 20px;
+    border: 1px solid #c1c1c1;
+    margin: 0 auto;
+    border-radius: 10px;
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.exercise-list ul {
+    padding: 0;
+    margin: 0;
+}
+
+.exercise-list li {
+    padding: 10px 15px;
+    margin: 8px 0;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    border-left: 4px solid #f7c8f3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    align-items: center;
+    display: flex;
+    font-size: 16px;
+    justify-content: space-between;
+    transition: background-color 0.3s;
+}
+
+.modal::-webkit-scrollbar {
+  display: none;  
+}
+
+.exercise-list::-webkit-scrollbar {
+  display: none;  
+}
 
   @media only screen and (orientation: portrait){
     .exercise{

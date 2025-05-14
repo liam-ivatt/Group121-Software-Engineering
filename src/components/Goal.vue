@@ -76,10 +76,6 @@ export default {
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  width: clamp(300px, 40%, 480px);
-  max-height: 60vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .goals-header {

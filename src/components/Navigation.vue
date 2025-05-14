@@ -5,7 +5,7 @@
         <button class="Home" @click="$router.push('/')">Home</button>
         <button class="group" @click="$router.push('/group')">Groups</button>
         <button class="profile" @click="toggleModal">Profile</button>
-        <button class="logout" @click="handleLogout">Log out</button>
+        <button class="logout" @click="handleLogout">Log Out</button>
     </div>
     
 </template>
@@ -98,23 +98,22 @@ div {
 
 
 .logout {
-    background-color: white;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    cursor: pointer;
     border: 1px solid #c1c1c1;
     border-radius: 10px;
-    color: black;
-    background-color: #fc4747;
     padding: 15px 20px;
     text-align: center;
     text-decoration: none;
     font-size: 15px;
     transition-duration: 0.4s;
-    cursor: pointer;
-    margin-left: 10px;
-    float: right;
+    margin: 5px;
 }
 
 .logout:hover {
-    background-color: #eee;
+    background-color: #ff5252;
 }
 
 .profile {
