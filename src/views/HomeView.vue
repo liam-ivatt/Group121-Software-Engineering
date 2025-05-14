@@ -23,7 +23,7 @@ export default {
     Foods,
     Exercises,
     Notification,
-    Line
+    Dashboard,
  },
  methods: {
     toggleModal() {
@@ -105,29 +105,6 @@ export default {
     return {
       showModal: false,
       showNotification: false,
-      bmi: "",
-      data: {
-        labels: [], // This will be dynamically updated in getUserData()
-        datasets: [
-          {
-            label: 'Weight History',
-            backgroundColor: '#f7c8f3',
-            borderColor: 'purple',
-            borderWidth: 1,
-            data: [] // This will be dynamically updated in getUserData()
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-            padding: {
-                left: 50,
-                right: 50
-            }
-        },
-      }    
     }
   },
     created() {
