@@ -36,7 +36,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify({ groupName: this.groupName }),
+                body: JSON.stringify({ groupName: this.groupName, groupId: this.groupId }),
             }); 
 
             const data = await res.json();

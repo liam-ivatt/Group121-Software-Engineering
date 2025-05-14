@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 
 const User = require('./models/User');
 const Group = require('./models/Group');
@@ -40,6 +41,32 @@ app.use(session({
   store: store,
   cookie: { httpOnly: true, secure: false, maxAge: 1000 * 60 * 60 }
 }));
+
+async function sendEmail(to, subject, text) {
+
+  html = `<h1>Health Tracker App</h1>
+          <p>You've been invited to a group! Enter ${text} to join!`
+
+  const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: "healthtrackeruea@gmail.com",
+    pass: "rhnl usem pzqa fxcj",
+  },
+  });
+
+  const info = await transporter.sendMail({
+
+    from: "Health Tracker <info@healthtracker.uea.ac.uk>",
+    to: to,
+    subject: subject,
+    html: html,
+
+  })
+
+}
 
 // Register new user
 app.post('/register', async (req, res) => {
@@ -256,8 +283,8 @@ app.get('/get-groups', async(req,res) => {
 
     const groups = await Group.find({ 
       groupMembers: req.session.userId 
-    }).populate('groupOwner', 'userName firstName lastName')
-      .populate('groupMembers', 'userName firstName lastName');
+    }).populate('groupOwner', 'userName firstName lastName email')
+      .populate('groupMembers', 'userName firstName lastName email');
 
     const formattedGroups = groups.map(group => {
       return {
@@ -265,6 +292,8 @@ app.get('/get-groups', async(req,res) => {
           name: group.groupName,
           userId: req.session.userId,
           ownerId: group.groupOwner._id,
+          members: group.groupMembers,
+          joinCode: group.joinCode
       }
     });
 
@@ -277,7 +306,7 @@ app.delete('/delete-group', async(req,res) => {
 
   const group = await Group.findById(groupId);
 
-  if (group.groupOwner.toString() !== req.session.userId) {
+  if (group.groupOwner.toString() !== req.session.userId.toString()) {
     return res.status(403).json({ message: 'Only the group owner can delete this group' });
   }
 
@@ -304,6 +333,20 @@ app.post('/join-group', async(req,res) => {
   group.groupMembers.push(user._id);
   await group.save();
 
+  res.status(200).json({ message: "Group joined successfully"})
+
+});
+
+app.post('/update-group', async(req,res) => {
+  const { groupId, groupName } = req.body;
+
+  const group = await Group.findById(groupId);
+
+  group.groupName = groupName || group.groupName;
+  await group.save();
+
+  res.status(200).json({ message: 'Group updated successfully' });
+  
 });
 
 app.post('/leave-group', async(req,res) => {
@@ -323,6 +366,33 @@ app.post('/leave-group', async(req,res) => {
   await group.save();  
   res.status(200).json({ message: 'Left group successfully' });
 
+});
+
+app.delete('/delete-group-member', async(req,res) => {
+  const { groupId, userId } = req.body;
+
+  const group = await Group.findById(groupId);
+  const user = await User.findById(userId);
+
+  group.groupMembers = group.groupMembers.filter(
+    member => !member.equals(user._id)
+  );
+
+  await group.save();
+});
+
+app.post('/invite-group-member', async(req,res) => {
+  const { joinCode, userEmail } = req.body;
+
+  const existingUser = await User.findOne({ email: userEmail });
+
+  if (!existingUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  await sendEmail(userEmail, 'Group Invite', joinCode);
+
+  res.status(200).json({ message: 'Invite sent successfully' });
 });
 
 //Goal Suggestion

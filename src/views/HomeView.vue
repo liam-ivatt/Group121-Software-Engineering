@@ -105,17 +105,17 @@ export default {
   data() {
     return {
       showModal: false,
-      showNotification: false,
+      showNotification: true,
       bmi: "",
       data: {
-        labels: [], // This will be dynamically updated in getUserData()
+        labels: [],
         datasets: [
           {
             label: 'Weight History',
             backgroundColor: '#f7c8f3',
             borderColor: 'purple',
             borderWidth: 1,
-            data: [] // This will be dynamically updated in getUserData()
+            data: []
           }
         ]
       },
