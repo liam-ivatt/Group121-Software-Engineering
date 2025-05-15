@@ -30,7 +30,6 @@
                     </li>
                 </ul>
             </div>
-
         </div>
     </div>
 </template>
@@ -46,6 +45,12 @@ export default {
             targetDate: '',
             goals: [],
         }
+    },
+    props: {
+    currentWeight: {
+      type: Number,
+      default: null
+    }
     },
     methods: {
         async getUserData() {

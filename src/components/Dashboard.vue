@@ -2,6 +2,7 @@
     <WeightModal v-if="showModal" @close="toggleModal" 
     @deleteWeight="getUserData"
     @setWeight="getUserData"
+    @weightUpdated="handleWeightUpdate"
      />
     <div class="dashboard">
       <div class="dashboard-header">
@@ -79,6 +80,11 @@ export default {
                 console.error('Error:', error);
             }
         },
+        handleWeightUpdate(newWeight) {
+
+            this.$emit('weightUpdated', newWeight);
+            
+        },
     },
   data() {
     return {
@@ -108,6 +114,7 @@ export default {
       }    
     }
   },
+  emits: ['weightUpdated'],
     created() {
         this.getUserData();
     },

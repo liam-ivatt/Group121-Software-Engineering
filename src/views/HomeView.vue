@@ -1,8 +1,8 @@
 <template>
     <Navigation />
     <Notification v-if="showNotification"/>
-    <Dashboard />
-    <Goals />
+    <Dashboard @weightUpdated="handleWeightUpdate"/>
+    <Goals :currentWeight="currentWeight"/>
     <Foods />
     <Exercises />
 </template>
@@ -98,13 +98,17 @@ export default {
             } else {
                 this.showNotification = false;
             }
-        }
+        },
+        handleWeightUpdate(newWeight) {
+            this.currentWeight = newWeight;
+        },
     },
 
   data() {
     return {
       showModal: false,
       showNotification: false,
+      currentWeight: null,
     }
   },
     created() {

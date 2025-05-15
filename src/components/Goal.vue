@@ -1,5 +1,5 @@
 <template>
-  <GoalModal v-if="showModal" @close="toggleModal" />
+  <GoalModal v-if="showModal" @close="toggleModal" :currentWeight="currentWeight"/>
   <div class="goals">
     <div class="goals-header">
       <h1>Goals</h1>
@@ -23,6 +23,12 @@ import GoalModal from './GoalModal.vue'
 
 export default {
   components: { GoalModal,
+  },
+  props: {
+    currentWeight: {
+      type: Number,
+      default: null
+    }
   },
   data() {
     return {

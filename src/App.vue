@@ -42,4 +42,8 @@ html {
   background-attachment: fixed;   
 }
 
+html::-webkit-scrollbar {
+  display: none;  
+}
+
 </style>

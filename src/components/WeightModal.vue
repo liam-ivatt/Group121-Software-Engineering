@@ -38,6 +38,7 @@ export default {
             weight: ''
         }
     },
+    emits: ['weightUpdated'],
     methods: {
         closeModal() {
             this.$emit('close')
@@ -111,6 +112,7 @@ export default {
                 this.msg = data.message;
                 this.isError = false;
                 this.$emit("setWeight")
+                this.$emit("weightUpdated", this.weight);
             } else {
                 this.isError = true;
                 this.msg = data.message
@@ -135,6 +137,7 @@ export default {
                 this.msg = data.message;
                 this.isError = false;
                 this.$emit("setWeight")
+                this.$emit("weightUpdated", this.weight);
             } else {
                 this.isError = true;
                 this.msg = data.message
