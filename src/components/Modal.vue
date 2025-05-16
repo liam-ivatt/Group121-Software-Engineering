@@ -12,7 +12,7 @@
                     <input type="number" v-model="height">
                 </div>
                 <div>
-                    <p v-if="msg">{{ msg }}</p>
+                    <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
                     <button @click="handleSubmit">Submit</button>
                 </div>
             </form>
@@ -29,8 +29,8 @@ export default {
             msg: '',
             email: '',
             height: '',
-            weight: '',
             name: '',
+            isError: false,
         }
     },
 
@@ -55,6 +55,7 @@ export default {
             if (res.ok) {
                 this.msg = ''
                 this.msg = 'Profile updated successfully!';
+                this.isError = false;
 
                 //Save today's date as the logged date in localStorage
                 const today = new Date();
@@ -64,6 +65,7 @@ export default {
 
             } else {
                 const errorData = await res.json();
+                this.isError = true;
                 this.msg = errorData.message;
             }
         },
@@ -160,6 +162,16 @@ form button {
 
 form button:hover {
     background-color: #eee;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
 }
 
 @media screen and (max-width: 426px) {

@@ -52,6 +52,7 @@ app.use(
   })
 );
 
+// Nodemailer config for inviting users
 async function sendEmail(to, subject, text) {
   html = `<h1>Health Tracker App</h1>
           <p>You've been invited to a group! Enter ${text} to join!`;
@@ -83,11 +84,9 @@ app.post("/register", async (req, res) => {
   const existingUserName = await User.findOne({ userName });
 
   if (existingEmail && existingUserName) {
-    return res
-      .status(400)
-      .json({
-        message: "Email and user name already in use, please choose another",
-      });
+    return res.status(400).json({
+      message: "Email and user name already in use, please choose another",
+    });
   } else if (existingUserName) {
     return res
       .status(400)
@@ -153,7 +152,7 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// Update Profile
+// Update profile
 app.post("/update-profile", async (req, res) => {
   const { email, height } = req.body;
 
@@ -161,6 +160,21 @@ app.post("/update-profile", async (req, res) => {
 
   user.email = email || user.email;
   user.height = height || user.height;
+
+  // Height validation
+  if (height && (height < 50 || height > 300)) {
+    return res
+      .status(400)
+      .json({ message: "Height must be between 50cm and 300cm" });
+  }
+
+  // Email validation
+  if (email) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+  }
 
   await user.save();
 
@@ -200,27 +214,30 @@ app.listen(PORT, () => {
 });
 
 // Exercise CRUD
-app.post("/add-exercise", async (req, res) => {
+// Add
+app.post("/create-exercise", async (req, res) => {
   const { exercise, exerciseStat, date } = req.body;
   const user = await User.findById(req.session.userId);
 
+  // Duration/distance validation
   if (exerciseStat < 0 || exerciseStat > 1000) {
-    return res
-      .status(400)
-      .json({
-        message: "Exercise duration/distance must be between 0 and 1000",
-      });
+    return res.status(400).json({
+      message: "Exercise duration/distance must be between 0 and 1000",
+    });
   }
 
+  // Add to user's exercise list
   user.exerciseHistory.push({ exercise, exerciseStat, date });
   await user.save();
 
   res.status(200).json({ message: "Exercise entry added" });
 });
 
+// Delete
 app.delete("/delete-exercise", async (req, res) => {
   const { id } = req.body;
 
+  // Find the user by Id, pull the exerciseHistory field, the id of the exercise, and set the array back without it
   const user = await User.findByIdAndUpdate(
     req.session.userId,
     { $pull: { exerciseHistory: { _id: id } } },
@@ -229,7 +246,6 @@ app.delete("/delete-exercise", async (req, res) => {
 
   res.status(200).json({
     message: "Exercise deleted successfully",
-    remainingExercises: user.exerciseHistory,
   });
 });
 
@@ -240,12 +256,10 @@ app.post("/create-goal", async (req, res) => {
 
   //Checks whether the user has a goal currently active
   if (user.goalCurrentlyActive == 1) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "You currently have a goal active. If you would like to overwrite it, please delete your currently active goal first",
-      });
+    return res.status(400).json({
+      message:
+        "You currently have a goal active. If you would like to overwrite it, please delete your currently active goal first",
+    });
   }
 
   //Checks whether the goalName already exists
@@ -265,12 +279,10 @@ app.post("/create-goal", async (req, res) => {
       .status(400)
       .json({ message: "Target weight is larger than your current weight!" });
   } else if (newBMI < 18.5) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Target weight would lead to you having a BMI of under 18.5 which is not recommended, please select another weight",
-      });
+    return res.status(400).json({
+      message:
+        "Target weight would lead to you having a BMI of under 18.5 which is not recommended, please select another weight",
+    });
   }
 
   //Checks whether the date chosen is valid
@@ -291,15 +303,18 @@ app.post("/create-goal", async (req, res) => {
 });
 
 // GROUP CRUD
+// Create
 app.post("/create-group", async (req, res) => {
   const { groupName } = req.body;
   const user = await User.findById(req.session.userId);
 
+  // Group name validation
   const existingGroup = await Group.findOne({ groupName });
   if (existingGroup) {
     return res.status(400).json({ message: "Group name already exists" });
   }
 
+  // Group constructor, with random join code
   const group = new Group({
     groupName,
     groupOwner: user._id,
@@ -312,13 +327,16 @@ app.post("/create-group", async (req, res) => {
   res.status(200).json({ message: "Group created successfully" });
 });
 
+// Read
 app.get("/get-groups", async (req, res) => {
+  // Finds Ids referenced in groupOwner & groupMembers fields, and filters them into objects of the four fields
   const groups = await Group.find({
     groupMembers: req.session.userId,
   })
     .populate("groupOwner", "userName firstName lastName email")
     .populate("groupMembers", "userName firstName lastName email");
 
+  // Return groups including the new user data
   const formattedGroups = groups.map((group) => {
     return {
       id: group._id,
@@ -333,11 +351,13 @@ app.get("/get-groups", async (req, res) => {
   res.status(200).json({ formattedGroups });
 });
 
+// Delete
 app.delete("/delete-group", async (req, res) => {
   const { groupId } = req.body;
 
   const group = await Group.findById(groupId);
 
+  // Group owner validation
   if (group.groupOwner.toString() !== req.session.userId.toString()) {
     return res
       .status(403)
@@ -348,32 +368,38 @@ app.delete("/delete-group", async (req, res) => {
   res.status(200).json({ message: "Group deleted successfully" });
 });
 
+// Join a group
 app.post("/join-group", async (req, res) => {
   const { joinCode } = req.body;
 
   const group = await Group.findOne({ joinCode });
 
+  // Invite code validation
   if (!group) {
     return res.status(404).json({ message: "Invite code not valid" });
   }
 
   const user = await User.findById(req.session.userId);
 
+  // User in group validation
   if (group.groupMembers.includes(user._id)) {
     return res
       .status(400)
       .json({ message: "You are already a member of this group" });
   }
 
+  // Add to groups member array
   group.groupMembers.push(user._id);
   await group.save();
 
   res.status(200).json({ message: "Group joined successfully" });
 });
 
+// Update
 app.post("/update-group", async (req, res) => {
   const { groupId, groupName } = req.body;
 
+  // Group name valiation
   const existingGroup = await Group.findOne({ groupName });
   if (existingGroup) {
     return res.status(400).json({ message: "Group name already exists" });
@@ -388,6 +414,7 @@ app.post("/update-group", async (req, res) => {
   res.status(200).json({ message: "Group updated successfully" });
 });
 
+// Leave group
 app.post("/leave-group", async (req, res) => {
   const { id } = req.body;
 
@@ -400,6 +427,7 @@ app.post("/leave-group", async (req, res) => {
       .json({ message: "You are not a member of this group" });
   }
 
+  // Remove user from group
   group.groupMembers = group.groupMembers.filter(
     (member) => !member.equals(user._id)
   );
@@ -408,6 +436,7 @@ app.post("/leave-group", async (req, res) => {
   res.status(200).json({ message: "Left group successfully" });
 });
 
+// Remove a user
 app.delete("/delete-group-member", async (req, res) => {
   const { groupId, userId } = req.body;
 
@@ -421,15 +450,18 @@ app.delete("/delete-group-member", async (req, res) => {
   await group.save();
 });
 
+// Invite a user
 app.post("/invite-group-member", async (req, res) => {
   const { joinCode, userEmail } = req.body;
 
   const existingUser = await User.findOne({ email: userEmail });
 
+  // User existance validation
   if (!existingUser) {
     return res.status(404).json({ message: "User not found" });
   }
 
+  // Call to nodemailer function
   await sendEmail(userEmail, "Group Invite", joinCode);
 
   res.status(200).json({ message: "Invite sent successfully" });
@@ -527,6 +559,24 @@ app.delete("/delete-goal", async (req, res) => {
   });
 });
 
+app.post('/update-goal-status', async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      user.goalCurrentlyActive = 0;
+      await user.save();
+
+      res.status(200).json({ message: "Goal set to inactive" });
+  } catch (error) {
+      res.status(500).json({ message: "Server error" });
+  }
+});
+
 //Food CRUD
 //Create a new meal
 app.post("/meals", async (req, res) => {
@@ -611,9 +661,11 @@ app.get("/meals", async (req, res) => {
 });
 
 //Weight CRUD
+// Create
 app.post("/set-weight", async (req, res) => {
   const { weight } = req.body;
 
+  // Weight validation
   if (weight && (weight < 0 || weight > 500)) {
     return res
       .status(400)
@@ -624,6 +676,7 @@ app.post("/set-weight", async (req, res) => {
 
   user.weight = weight;
 
+  // Add to weightHistory array
   if (weight) {
     user.bmi = user.weight / (user.height / 100) ** 2;
     user.weightHistory.push({ weight: weight, date: new Date() });
@@ -634,6 +687,7 @@ app.post("/set-weight", async (req, res) => {
   await user.save();
 });
 
+// Delete
 app.delete("/delete-weight", async (req, res) => {
   const { id } = req.body;
 
@@ -648,6 +702,7 @@ app.delete("/delete-weight", async (req, res) => {
   });
 });
 
+// Update weight (no validation needed as its frontend button based)
 app.post("/update-weight", async (req, res) => {
   const { weight } = req.body;
 

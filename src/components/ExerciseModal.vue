@@ -64,7 +64,7 @@ export default {
 
             this.errData = '';
 
-            const res = await fetch('http://localhost:5000/add-exercise', {
+            const res = await fetch('http://localhost:5000/create-exercise', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
