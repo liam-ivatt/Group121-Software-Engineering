@@ -532,7 +532,6 @@ app.post("/suggest-goal", async (req, res) => {
     };
   }
 
-  console.log(suggestedGoal);
   return res.status(200).json({ suggestedGoal });
 });
 

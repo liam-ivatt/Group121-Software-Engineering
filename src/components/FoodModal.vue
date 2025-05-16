@@ -70,13 +70,18 @@ export default {
             commonFoods: [
                 { name: 'Apple', calories: 95 },
                 { name: 'Banana', calories: 105 },
-                { name: 'Chicken Breast(100g)', calories: 165 },
+                { name: 'Chicken Breast (100g)', calories: 165 },
                 { name: 'Egg', calories: 78 },
-                { name: 'Yogurt(100g)', calories: 59 },
-                { name: 'Oatmeal(200g)', calories: 136 },
-                { name: 'Brown Rice(1cup)', calories: 218 },
-                { name: 'Salmon(100g)', calories: 208 },
-                { name: 'Avocado', calories: 240 }
+                { name: 'Yogurt (100g)', calories: 59 },
+                { name: 'Oatmeal (200g)', calories: 136 },
+                { name: 'Brown Rice (1cup)', calories: 218 },
+                { name: 'Salmon (100g)', calories: 208 },
+                { name: 'Avocado', calories: 240 },
+                { name: 'English tea(300ml)', calories: 75},
+                { name: 'Coca-cola can', calories: 140},
+                { name: 'Orange juice (225ml)', calories: 110},
+                { name: 'Beer (pint)', calories: 200},
+                { name: 'Latte - whole milk (475ml)', calories: 220}
             ],
             message: '',
             messageType: '',
@@ -285,6 +290,7 @@ button:hover {
     align-items: center;
     width: 100%;
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .foodInfo {
