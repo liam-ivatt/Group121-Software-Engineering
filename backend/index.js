@@ -220,9 +220,9 @@ app.post("/create-exercise", async (req, res) => {
   const user = await User.findById(req.session.userId);
 
   // Duration/distance validation
-  if (exerciseStat < 0 || exerciseStat > 1000) {
+  if (exerciseStat <= 0 || exerciseStat > 1000) {
     return res.status(400).json({
-      message: "Exercise duration/distance must be between 0 and 1000",
+      message: "Exercise duration/distance must be between 1 and 1000",
     });
   }
 

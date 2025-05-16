@@ -96,8 +96,6 @@ export default {
                     }
                 });
 
-                console.log(this.groups);
-
             } else {
                 console.error("Error fetching groups");
             }

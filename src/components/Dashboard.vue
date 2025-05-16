@@ -80,8 +80,6 @@ export default {
     },
     bmiClassification(bmi) {
 
-      console.log("test", bmi)
-
       switch (true) {
         case bmi < 18.5:
           this.classification = 'Underweight';
