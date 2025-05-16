@@ -162,6 +162,13 @@ form button:hover {
     background-color: #eee;
 }
 
+@media screen and (max-width: 426px) {
+    
+    .modal {
+        width: 80%;
+    }
+ 
+}
 
 
 

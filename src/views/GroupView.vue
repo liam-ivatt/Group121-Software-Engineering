@@ -246,4 +246,78 @@ input {
     width: 100%;
 }
 
+@media screen and (max-width: 426px) {
+    .group {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .group-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .input-button-wrapper {
+        flex-direction: column;
+        width: 100%;
+        align-items: stretch;
+    }
+    
+    .input-button-wrapper input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+    
+    .input-button-wrapper button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .group-list {
+        padding: 10px;
+        max-height: 400px;
+    }
+    
+    .group-list ul {
+        grid-template-columns: 1fr;
+    }
+    
+    .group-list li {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .group-list h3 {
+        font-size: 16px;
+    }
+    
+    .group-list p {
+        font-size: 14px;
+    }
+    
+    .group-list button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .new-group {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 22px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .error {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+}
+
 </style>

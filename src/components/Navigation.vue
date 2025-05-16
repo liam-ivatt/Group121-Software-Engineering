@@ -1,6 +1,6 @@
 <template>
     <Modal v-if="showModal" @close="toggleModal" />
-    <div>
+    <div class="mobile">
         <h1 class="header">Welcome, {{ firstName }}</h1>
         <button class="Home" @click="$router.push('/')">Home</button>
         <button class="group" @click="$router.push('/group')">Groups</button>
@@ -152,27 +152,12 @@ div {
     background-color: #eee;
 }
 
-@media only screen and (orientation: portrait){
-  div{
-    margin: 0px;
-    width: 98%;
-    margin-bottom: 5px;
-    border-radius: 0px;
-    padding: 1%;
-  } 
-  h1{
-    margin: 4%;
-  }
-  .profile{
-    margin-right: 1%;
-    height:80%;
-  }
-  .logout{
-    position: relative; 
-    margin: 0%;
-    margin-right: 4%;
-    height:80%;
-  }
+@media screen and (max-width: 426px) {
+    
+    .mobile {
+        display: block;
+    }
+ 
 }
 
 </style>

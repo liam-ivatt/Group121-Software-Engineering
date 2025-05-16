@@ -264,4 +264,59 @@ form button:hover {
     color: green;
     text-align: center;
 }
+
+@media screen and (max-width: 426px) {
+    .modal {
+        width: 80%;
+    }
+
+    form {
+        width: 100%;
+        margin: 10px auto;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    form label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    form select, input {
+        width: 80%;
+    }
+    
+    form button {
+        margin: 0 auto;
+    }
+    
+    .user-list {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .user-list li {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px 10px;
+    }
+    
+    .delete {
+        margin-top: 10px;
+        padding: 8px 15px;
+    }
+    
+    h3 {
+        text-align: center;
+    }
+    
+    .error, .success {
+        margin: 10px 0;
+    }
+}
+
 </style>

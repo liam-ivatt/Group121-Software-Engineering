@@ -137,6 +137,13 @@ h1 {
     text-align: center;
 }
 
+@media screen and (max-width: 426px) {
+    .modal {
+        width: 80%;
+    }
+        
+}
+
 
 </style>
 

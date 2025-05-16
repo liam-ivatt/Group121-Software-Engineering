@@ -256,6 +256,67 @@ form button:hover {
     cursor: pointer;
 }
 
+@media screen and (max-width: 426px) {
+    .modal {
+        width: 80%;
+    }
+    
+    form {
+        width: 100%;
+        margin: 10px auto;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    form label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    form select, input {
+        width: 80%;
+    }
+    
+    form button {
+        margin: 0 auto;
+    }
+    
+    .exercise-list {
+        width: 90%;
+        padding: 15px;
+        margin: 0 auto;
+    }
+    
+    .exercise-list li {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px 10px;
+    }
+    
+    .exercise-list li h3, 
+    .exercise-list li p {
+        margin: 5px 0;
+    }
+    
+    .add-exercise {
+        margin-top: 10px;
+        padding: 8px 15px;
+        width: auto;
+    }
+    
+    h1, h3 {
+        text-align: center;
+    }
+    
+    p {
+        text-align: center;
+    }
+}
+
 
 </style>
 

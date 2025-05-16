@@ -89,16 +89,52 @@ div{
     background-color: #eee;
 }
 
-@media only screen and (orientation: portrait){
-  div{
-    position: relative;
-    width: 96%;
-    padding-left: 2%;
-    padding-right: 2%;
-    padding-top: 1%;
-    padding-bottom: 1%;
-    margin-bottom: 5px;
-  }
+@media screen and (max-width: 426px) {
+    div {
+        flex-direction: column;
+        width: 80%;
+        padding: 20px 15px;
+        gap: 15px;
+    }
+    
+    h1 {
+        font-size: 18px;
+        text-align: center;
+    }
+    
+    .header {
+        margin-right: 0;
+    }
+    
+    .profile {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 14px;
+    }
+    
+    form {
+        width: 100%;
+        margin: 10px auto;
+    }
+    
+    .form-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    form label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    form select, input {
+        width: 80%;
+    }
+    
+    form button {
+        margin: 0 auto;
+    }
 }
 
 </style>
