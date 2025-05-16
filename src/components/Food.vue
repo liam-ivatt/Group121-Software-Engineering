@@ -117,12 +117,14 @@ export default {
 
 <style scoped>
 .foodContainer {
+  position: block;
+  float: left;
   display: flex;
   flex-direction: column;
   padding: 20px;
   background-color: white;
   width: 45%;
-  margin: 0 auto;
+  margin-left: 26.75px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -219,6 +221,14 @@ h2 {
 
 .deleteButton:hover {
   background-color: #eee;
+}
+
+.foodList::-webkit-scrollbar {
+  display: none;
+}
+
+.foodList::-webkit-scrollbar {
+  display: none;
 }
 
 @media only screen and (orientation: portrait) {

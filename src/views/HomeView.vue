@@ -1,10 +1,11 @@
 <template>
     <Navigation />
-    <Notification v-if="showNotification" :notificationColor="notificationColor" :notificationMessage="notificationMessage"/>
+    <Notification v-if="showNotification" :notificationColor="notificationColor"
+        :notificationMessage="notificationMessage" />
     <Dashboard @weightUpdated="handleWeightUpdate" />
-    <Goals :currentWeight="currentWeight" />
     <Foods />
     <Exercises />
+    <Goals :currentWeight="currentWeight" />
 </template>
 
 <script>

@@ -7,8 +7,10 @@
     </div>
     <div class="current-goals">
       <ul>
-        <li v-if="goals.length === 0 || goals.goalCurrentlyActive === 0">Goals History</li>
-        <li v-for="goal in goals" :key="goal.goal">
+        <li v-if="goals.length === 0 || goals.goalCurrentlyActive === 0">
+          <h3>No goals made yet.. Create a new one with our suggestion!</h3>
+        </li>
+        <li v-for="goal in goals" :key="goal.goal" class="active-goal">
           <h3>{{ goal.goal }}</h3>
           <p>Target: {{ goal.target }}</p>
           <p>End date: {{ goal.endDate }}</p>
@@ -79,17 +81,37 @@ export default {
 
 <style scoped>
 .goals {
-  position: block;
-  float: left;
   display: flex;
   flex-direction: column;
   padding: 20px;
   background-color: white;
-  width: 45%;
-  margin-left: 26.75px;
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.active-goal {
+  padding: 10px 15px;
+  margin: 8px 0;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  border-left: 4px solid #f7c8f3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  display: flex;
+  font-size: 16px;
+  justify-content: space-between;
+}
+
+.active-goal h3 {
+  padding-left: 10px;
+}
+
+.active-goal p {
+  padding-right: 10px;
 }
 
 .goals-header {
@@ -136,6 +158,7 @@ h1 {
 .addGoal:hover {
   background-color: #eee;
 }
+
 
 @media only screen and (orientation: portrait) {
   .goals {

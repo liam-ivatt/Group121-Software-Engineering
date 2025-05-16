@@ -15,7 +15,7 @@
                     <input v-model="targetDate" type="date" placeholder="Date" required>
                 </div>
                 <div>
-                    <p v-if="msg">{{ msg }}</p>
+                    <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
                     <button type="submit">Submit</button>
                 </div>
             </form>
@@ -24,9 +24,9 @@
                 <ul>
                     <li v-for="(item, index) in goals" :key="index">
                         <h3>{{ item.goalName }}</h3>
-                        <p>Target Weight = {{ item.targetWeight }}</p>
+                        <p>Goal Weight: {{ item.targetWeight }}</p>
                         <p>{{ item.targetDate }}</p>
-                        <button @click="deleteGoal(item.id)" class="add-exercise">Remove</button>
+                        <button @click="deleteGoal(item.id)" class="add-goal">Remove</button>
                     </li>
                 </ul>
             </div>
@@ -44,6 +44,7 @@ export default {
             targetWeight: '',
             targetDate: '',
             goals: [],
+            isError: false,
         }
     },
     props: {
@@ -92,9 +93,11 @@ export default {
                 if (!res.ok) {
                     const errorData = await res.json();
                     this.msg = errorData.message;
+                    this.isError = true;
                 }
                 else {
                     this.msg = '';
+                    this.isError = false;
                     this.msg = "Goal created. Good luck!";
                     await this.getUserData();
 
@@ -138,6 +141,7 @@ export default {
 
                 if (res.ok) {
                     const data = await res.json();
+                    this.isError = false;
                     this.msg = 'Suggested goal loaded. You can now review and submit it.';
 
                     const suggestedG = data.suggestedGoal;
@@ -148,6 +152,7 @@ export default {
                 } else {
                     const errorData = await res.json();
                     this.msg = errorData.message;
+                    this.isError = true;
                 }
             } catch (error) {
                 console.error('Goal Suggestion Error:', error);
@@ -265,12 +270,8 @@ form button:hover {
     transition: background-color 0.3s;
 }
 
-.modal::-webkit-scrollbar {
-    display: none;
-}
-
-.goal-list::-webkit-scrollbar {
-    display: none;
+.goal-list h3 {
+    width: 25%;
 }
 
 .add-goal {
@@ -284,6 +285,24 @@ form button:hover {
     font-size: 15px;
     transition-duration: 0.4s;
     cursor: pointer;
+}
+
+.modal::-webkit-scrollbar {
+    display: none;
+}
+
+.goal-list::-webkit-scrollbar {
+    display: none;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
 }
 
 @media screen and (max-width: 426px) {

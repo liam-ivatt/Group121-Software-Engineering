@@ -88,9 +88,8 @@ export default {
   flex-direction: column;
   padding: 20px;
   background-color: white;
-  width: 40%;
+  width: 45%;
   margin: 0 auto;
-  margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -129,7 +128,7 @@ h1 {
   border: 1px solid #c1c1c1;
   margin: 0 auto;
   border-radius: 10px;
-  height: 300px;
+  height: 431px;
   overflow-y: auto;
   overflow-x: hidden;
 }

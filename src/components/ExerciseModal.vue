@@ -21,7 +21,6 @@
 
                 <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
 
-
                 <div class="form-group">
                     <button>Add Exercise</button>
                 </div>
@@ -151,6 +150,7 @@ export default {
     background: white;
     border-radius: 10px;
 }
+
 
 .backdrop {
     top: 0;
