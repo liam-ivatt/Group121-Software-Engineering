@@ -103,6 +103,7 @@ export default {
                 if (weightDate.getTime() === today.getTime() && !(activeGoal.targetWeight >= this.userData.weight)) {
                     console.log("Weight already logged for today.");
                     this.showNotification = false;
+                    return;
                 }
 
                 if (targetDate > today) {
