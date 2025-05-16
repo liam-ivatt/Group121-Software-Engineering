@@ -5,6 +5,10 @@ const MongoStore = require('connect-mongodb-session')(session);
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const MONGODB_API_KEY = process.env.MONGODB_API_KEY
+const EMAIL_APP_KEY = process.env.EMAIL_API_KEY
 
 const User = require('./models/User');
 const Group = require('./models/Group');
@@ -12,7 +16,7 @@ const Foods = require('./models/Foods')
 
 const app = express();
 const PORT = 5000;
-const MongoURI = "mongodb+srv://liammivatt:Galaxytheo2020@healthtracker.vlneqzh.mongodb.net/HealthTracker?retryWrites=true&w=majority"
+const MongoURI = MONGODB_API_KEY;
 
 // Middleware
 app.use(cors({
@@ -54,7 +58,7 @@ async function sendEmail(to, subject, text) {
   secure: true, // true for 465, false for other ports
   auth: {
     user: "healthtrackeruea@gmail.com",
-    pass: "rhnl usem pzqa fxcj",
+    pass: EMAIL_APP_KEY,
   },
   });
 

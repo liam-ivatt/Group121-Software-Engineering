@@ -64,6 +64,7 @@ export default {
             }
 
             const weightLoggedDate = localStorage.getItem('weightLoggedDate');
+
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
 
@@ -101,6 +102,7 @@ export default {
         },
         handleWeightUpdate(newWeight) {
             this.currentWeight = newWeight;
+            this.getUserData();
         },
     },
 

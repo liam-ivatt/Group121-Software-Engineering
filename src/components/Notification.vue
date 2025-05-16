@@ -1,5 +1,5 @@
 <template>
-    <Modal v-if="showModal" @close="toggleModal" />
+    <WeightModal v-if="showModal" @close="toggleModal" />
     <div>
         <h1 class="header">Log your weight for today!</h1>
         <button class="profile" @click="toggleModal">Log Weight</button>
@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import Modal from './Modal.vue'
+import WeightModal from '../components/WeightModal.vue'
 
 export default {
-  components: { Modal,
+  components: { WeightModal,
   },
   data() {
     return {
@@ -45,12 +45,10 @@ div{
   align-items: center;
   justify-content: space-between;      
   gap: 16px;                           
-  width: 86%;                          
-  max-width: 1100px;                   
+  width: 86%;                 
   margin: 0 auto 20px;                
   padding: 16px 24px;                  
-  background-color: crimson;
-  border: 2px solid #b92b2b;           
+  background-color: crimson;          
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,.24);
 }

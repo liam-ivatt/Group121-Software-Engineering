@@ -9,11 +9,10 @@
         <h1>Dashboard</h1>
         <button class="set-weight" @click="toggleModal">Set Weight</button>
       </div>
-
-        
         <div class="chart-container">
             <Line :data="data" :options="options" :height="200"/>
         </div>
+        <h1>BMI</h1>
         <p>Your BMI is currently {{ bmi }}</p>
     </div>
 </template>

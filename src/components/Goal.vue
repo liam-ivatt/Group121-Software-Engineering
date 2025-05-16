@@ -79,13 +79,13 @@ export default {
 <style scoped>
 .goals {
   position: block;
-  margin-left: 5%;
   float: left;
   display: flex;
   flex-direction: column; 
   padding: 20px;
   background-color: white;
-  width: 40%;
+  width: 45%;
+  margin-left: 26.75px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -117,7 +117,6 @@ h1 {
   justify-content: space-between;
   padding: 6px 0;  
 }
-
 
 .addGoal {
   background-color: white;
