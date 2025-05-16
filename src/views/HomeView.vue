@@ -66,7 +66,6 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ userId: this.userData._id }) // Send userId
                 });
                 if (res.ok) {
                     this.userData.goalCurrentlyActive = 0;
@@ -104,7 +103,6 @@ export default {
                 if (weightDate.getTime() === today.getTime() && !(activeGoal.targetWeight >= this.userData.weight)) {
                     console.log("Weight already logged for today.");
                     this.showNotification = false;
-                    return;
                 }
 
                 if (targetDate > today) {
@@ -112,16 +110,19 @@ export default {
                         this.showNotification = true;
                         this.notificationColor = "green";
                         this.notificationMessage = 'Congratulations, you have reached your goal!';
+                        console.log(this.notificationMessage);
                         await this.updateGoalStatus();
                     } else {
                         this.showNotification = true;
                         this.notificationColor = "orange";
                         this.notificationMessage = 'Log your weight for today!';
+                        console.log(this.notificationMessage);
                     }
                 } else {
                     this.showNotification = true;
                     this.notificationColor = "red";
                     this.notificationMessage = 'Your goal has expired, please set a new one!';
+                    console.log(this.notificationMessage);
                     await this.updateGoalStatus();
                 }
 

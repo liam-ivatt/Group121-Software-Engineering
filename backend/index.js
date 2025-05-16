@@ -563,7 +563,7 @@ app.post('/update-goal-status', async (req, res) => {
   const { userId } = req.body;
 
   try {
-      const user = await User.findById(userId);
+      const user = await User.findById(req.session.userId);
       if (!user) {
           return res.status(404).json({ message: "User not found" });
       }
@@ -717,22 +717,4 @@ app.post("/update-weight", async (req, res) => {
   res.status(200).json({ message: "Weight set successfully!" });
 
   await user.save();
-});
-
-app.post('/update-goal-status', async (req, res) => {
-  const { userId } = req.body;
-
-  try {
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
-
-      user.goalCurrentlyActive = 0;
-      await user.save();
-
-      res.status(200).json({ message: "Goal set to inactive" });
-  } catch (error) {
-      res.status(500).json({ message: "Server error" });
-  }
 });
