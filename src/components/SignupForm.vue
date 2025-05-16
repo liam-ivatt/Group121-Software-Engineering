@@ -1,20 +1,19 @@
 <template>
-    <div class="sign">
-        <h2>Sign up</h2>
-        <form @submit.prevent="handleSubmit">
-            <input type="text" required placeholder="First name" v-model="firstname">
-            <input type="text" required placeholder="Last name" v-model="lastname">
-            <input type="text" required placeholder="User name" v-model="username">
-            <input type="number" required placeholder="Height (cm)" v-model="height">
-            <input type="number" required placeholder="Weight (kg)" v-model="weight">
-            <input type="email" required placeholder="Email" v-model="email">
-            <input type="password" required placeholder="Password" v-model="password">
-            <br>
-            <p v-if="errMsg" style="color: red;">{{ errMsg }}</p>
-            <p v-if="msg" style="color: green;">{{ msg }}</p>
-            <button @click="register">Sign up</button>
-        </form>
-    </div>
+  <div class="sign">
+    <h2>Sign up</h2>
+    <form @submit.prevent="handleSubmit">
+      <input type="text" required placeholder="First name" v-model="firstname">
+      <input type="text" required placeholder="Last name" v-model="lastname">
+      <input type="text" required placeholder="User name" v-model="username">
+      <input type="number" required placeholder="Height (cm)" v-model="height">
+      <input type="number" required placeholder="Weight (kg)" v-model="weight">
+      <input type="email" required placeholder="Email" v-model="email">
+      <input type="password" required placeholder="Password" v-model="password">
+      <br>
+      <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
+      <button @click="register">Sign up</button>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -22,15 +21,15 @@
 export default {
   data() {
     return {
-      firstname:  '',
-      lastname:  '',
-      username:  '',
-      email:  '',
-      password:  '',
-      height:  '',
-      weight:  '',
-      errMsg:  '',
-      msg: ''
+      firstname: '',
+      lastname: '',
+      username: '',
+      email: '',
+      password: '',
+      height: '',
+      weight: '',
+      msg: '',
+      isError: false,
     };
   },
 
@@ -42,7 +41,7 @@ export default {
           headers: {
             'Content-Type': 'application/json'
           },
-          credentials: 'include', // Send session cookie with request
+          credentials: 'include',
           body: JSON.stringify({
             firstName: this.firstname,
             lastName: this.lastname,
@@ -56,10 +55,11 @@ export default {
 
         if (!res.ok) {
           const errorData = await res.json();
-          this.errMsg = errorData.message;
+          this.msg = errorData.message;
+          this.isError = true;
         } else {
-          this.errMsg = ""; 
           this.msg = "Registration successful! Please log in.";
+          this.isError = false;
         }
       } catch (error) {
         console.error('Registration error:', error);
@@ -73,7 +73,6 @@ export default {
 </script>
 
 <style scoped>
-
 button {
   background-color: white;
   border: 1px solid #c1c1c1;
@@ -93,17 +92,17 @@ button:hover {
 
 .sign {
   position: block;
-    margin-right: 5%;
-    margin-top: 1%;
-    float: right;
-    display: flex;
-    flex-direction: column; 
-    padding: 20px;
-    background-color: white;
-    width: 40%;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-right: 5%;
+  margin-top: 1%;
+  float: right;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: white;
+  width: 40%;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .sign form {
@@ -123,18 +122,26 @@ button:hover {
   border: 1px solid #eee;
   outline: none;
   margin: 10px auto;
-  
+
 }
 
-@media only screen and (orientation: portrait){
-  .sign{
+.error {
+  color: red;
+  text-align: center;
+}
+
+.success {
+  color: green;
+  text-align: center;
+}
+
+@media only screen and (orientation: portrait) {
+  .sign {
     float: none;
     margin: 0 auto;
     width: 85%;
     margin-bottom: 5px;
-    padding:1%;
+    padding: 1%;
   }
 }
-
-
 </style>

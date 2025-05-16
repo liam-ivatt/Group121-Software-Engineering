@@ -19,7 +19,7 @@
                     <input type="number" v-model="exerciseStat" v-if="exerciseName === 'Running'">
                 </div>
 
-                <p v-if="msg">{{ msg }}</p>
+                <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
 
 
                 <div class="form-group">
@@ -37,7 +37,7 @@
                         <button @click="deleteExercise(item.id)" class="add-exercise">Remove</button>
                     </li>
                 </ul>
-            </div> 
+            </div>
         </div>
     </div>
 </template>
@@ -52,7 +52,8 @@ export default {
             exerciseName: 'Weight Lifting',
             exerciseStat: 0,
             exercises: [],
-            msg: ''
+            msg: '',
+            isError: false,
         }
     },
     methods: {
@@ -60,7 +61,7 @@ export default {
             this.$emit('close')
         },
         async handleSubmit() {
-            
+
             this.errData = '';
 
             const res = await fetch('http://localhost:5000/add-exercise', {
@@ -71,16 +72,19 @@ export default {
                 credentials: 'include',
                 body: JSON.stringify({ exercise: this.exerciseName, exerciseStat: this.exerciseStat, date: new Date().toLocaleDateString('en-GB') }),
             });
- 
+
             if (res.ok) {
-                    this.msg = ''
-                    this.msg = 'Exercise added successfully!';
-                    await this.getUserData();
-                } else { 
-                    const errorData = await res.json();
-                    this.msg = errorData.message; 
+                this.msg = ''
+                this.msg = 'Exercise added successfully!';
+                this.$emit('addExercise')
+                this.isError = true;
+                await this.getUserData();
+            } else {
+                const errorData = await res.json();
+                this.msg = errorData.message;
+                this.isError = true;
             }
-        
+
         },
         async getUserData() {
             const res = await fetch('http://localhost:5000/user', {
@@ -90,21 +94,21 @@ export default {
 
             if (res.ok) {
                 const data = await res.json();
-
-                console.log(data.exerciseHistory)
+                this.isError = false;
 
                 if (data.exerciseHistory) {
-                        this.exercises = data.exerciseHistory.map(exercise => {
-                            return {
-                                id: exercise._id,
-                                name: exercise.exercise.charAt(0).toUpperCase() + exercise.exercise.slice(1),
-                                stat: exercise.exerciseStat,
-                                date: exercise.date,
-                            };
-                        });
-            } else {
-                console.error('Error fetching user data');
-            }
+                    this.exercises = data.exerciseHistory.map(exercise => {
+                        return {
+                            id: exercise._id,
+                            name: exercise.exercise.charAt(0).toUpperCase() + exercise.exercise.slice(1),
+                            stat: exercise.exerciseStat,
+                            date: exercise.date,
+                        };
+                    });
+                } else {
+                    this.isError = false;
+                    console.error('Error fetching user data');
+                }
             }
         },
         async deleteExercise(id) {
@@ -120,8 +124,10 @@ export default {
             if (res.ok) {
                 await this.getUserData();
                 this.$emit('deleteExercise')
+                this.isError = false;
             } else {
                 console.error('Error deleting exercise');
+                this.isError = true;
             }
         }
     },
@@ -149,7 +155,7 @@ export default {
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -175,7 +181,8 @@ form h1 {
     margin: 15px 0;
 }
 
-form select, input {
+form select,
+input {
     width: 30%;
     padding: 10px;
     border-radius: 10px;
@@ -227,7 +234,7 @@ form button:hover {
     background-color: #f8f8f8;
     border-radius: 6px;
     border-left: 4px solid #f7c8f3;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     align-items: center;
     display: flex;
     font-size: 16px;
@@ -236,11 +243,11 @@ form button:hover {
 }
 
 .modal::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .exercise-list::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .add-exercise {
@@ -256,67 +263,76 @@ form button:hover {
     cursor: pointer;
 }
 
+.error {
+    color: red;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
+}
+
 @media screen and (max-width: 426px) {
     .modal {
         width: 80%;
     }
-    
+
     form {
         width: 100%;
         margin: 10px auto;
     }
-    
+
     .form-group {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     form label {
         width: 100%;
         text-align: center;
         margin-bottom: 5px;
     }
-    
-    form select, input {
+
+    form select,
+    input {
         width: 80%;
     }
-    
+
     form button {
         margin: 0 auto;
     }
-    
+
     .exercise-list {
         width: 90%;
         padding: 15px;
         margin: 0 auto;
     }
-    
+
     .exercise-list li {
         flex-direction: column;
         text-align: center;
         padding: 15px 10px;
     }
-    
-    .exercise-list li h3, 
+
+    .exercise-list li h3,
     .exercise-list li p {
         margin: 5px 0;
     }
-    
+
     .add-exercise {
         margin-top: 10px;
         padding: 8px 15px;
         width: auto;
     }
-    
-    h1, h3 {
+
+    h1,
+    h3 {
         text-align: center;
     }
-    
+
     p {
         text-align: center;
     }
 }
-
-
 </style>
-

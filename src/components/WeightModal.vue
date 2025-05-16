@@ -3,14 +3,14 @@
         <div class="modal">
             <form @submit.prevent>
                 <h3>Weight</h3>
-                    <div class="form-group">
-                        <label>Set Weight (KG)</label>
-                        <input v-model="weight" type="text" placeholder="Weight (KG)" required>
-                    </div>
-                    <div class="form-group">
-                        <button @click="setWeight">Set Weight</button>
-                    </div>
-                <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>                
+                <div class="form-group">
+                    <label>Set Weight (KG)</label>
+                    <input v-model="weight" type="text" placeholder="Weight (KG)" required>
+                </div>
+                <div class="form-group">
+                    <button @click="setWeight">Set Weight</button>
+                </div>
+                <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
             </form>
 
             <div class="weight-list">
@@ -21,7 +21,7 @@
                     </li>
                 </ul>
                 <p v-else>Loading members...</p>
-            </div> 
+            </div>
 
         </div>
     </div>
@@ -55,16 +55,16 @@ export default {
                 this.weight = data.weight
 
                 if (data.weightHistory) {
-                        this.weights = data.weightHistory.map(weight => {
-                            return {
-                                id: weight._id,
-                                weight: weight.weight,
-                                date: new Date(weight.date).toLocaleDateString()
-                            };
-                        });
-            } else {
-                console.error('Error fetching user data');
-            }
+                    this.weights = data.weightHistory.map(weight => {
+                        return {
+                            id: weight._id,
+                            weight: weight.weight,
+                            date: new Date(weight.date).toLocaleDateString()
+                        };
+                    });
+                } else {
+                    console.error('Error fetching user data');
+                }
             }
         },
         async deleteWeight(id) {
@@ -74,15 +74,15 @@ export default {
             const res = await fetch('http://localhost:5000/delete-weight', {
                 method: 'DELETE',
                 headers: {
-                   'Content-Type': 'application/json'
+                    'Content-Type': 'application/json'
                 },
-                credentials: 'include', 
+                credentials: 'include',
                 body: JSON.stringify({ id }),
             });
 
             const data = await res.json();
 
-            if (res.ok) {        
+            if (res.ok) {
                 await this.updateWeight(newWeight)
                 await this.getUserData();
                 this.$emit('deleteWeight');
@@ -168,7 +168,7 @@ export default {
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -200,7 +200,8 @@ h3 {
     margin: 15px 0;
 }
 
-form select, input {
+form select,
+input {
     width: 30%;
     padding: 10px;
     border-radius: 10px;
@@ -252,7 +253,7 @@ form button:hover {
     background-color: #f8f8f8;
     border-radius: 6px;
     border-left: 4px solid #f7c8f3;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     align-items: center;
     display: flex;
     font-size: 16px;
@@ -280,11 +281,11 @@ form button:hover {
 }
 
 .modal::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .weight-list::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .error {
@@ -301,55 +302,55 @@ form button:hover {
     .modal {
         width: 80%;
     }
-    
+
     form {
         width: 100%;
         margin: 10px auto;
     }
-    
+
     .form-group {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     form label {
         width: 100%;
         text-align: center;
         margin-bottom: 5px;
     }
-    
-    form select, input {
+
+    form select,
+    input {
         width: 80%;
     }
-    
+
     form button {
         margin: 0 auto;
     }
-    
+
     .weight-list {
         width: 90%;
         padding: 15px;
     }
-    
+
     .weight-list li {
         flex-direction: column;
         text-align: center;
         padding: 15px 10px;
     }
-    
+
     .delete {
         margin-top: 10px;
         padding: 8px 15px;
     }
-    
+
     h3 {
         text-align: center;
     }
-    
-    .error, .success {
+
+    .error,
+    .success {
         margin: 10px 0;
     }
 }
-
 </style>
-

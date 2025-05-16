@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-  </div>  
+  </div>
 </template>
 
 <script>
@@ -62,9 +62,9 @@ export default {
       try {
         const response = await fetch('http://localhost:5000/meals', {
           method: 'GET',
-          credentials: 'include',  
+          credentials: 'include',
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           this.meals = data;
@@ -80,9 +80,9 @@ export default {
       try {
         const response = await fetch('http://localhost:5000/meals/today', {
           method: 'GET',
-          credentials: 'include',  
+          credentials: 'include',
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           this.todayCount = data.count;
@@ -100,7 +100,7 @@ export default {
           method: 'DELETE',
           credentials: 'include'
         });
-        
+
         if (response.ok) {
           this.meals = this.meals.filter(meal => meal._id !== id);
           this.fetchTodayStats();
@@ -118,7 +118,7 @@ export default {
 <style scoped>
 .foodContainer {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   padding: 20px;
   background-color: white;
   width: 45%;
@@ -130,14 +130,15 @@ export default {
 
 .headerSection {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
-h1, h2 {
-  margin: 0; 
+h1,
+h2 {
+  margin: 0;
 }
 
 .todaySummary {
@@ -220,12 +221,12 @@ h1, h2 {
   background-color: #eee;
 }
 
-@media only screen and (orientation: portrait){
-  .foodContainer{
+@media only screen and (orientation: portrait) {
+  .foodContainer {
     float: none;
     margin: 0 auto;
     width: 85%;
     margin-bottom: 5px;
-   }
   }
+}
 </style>

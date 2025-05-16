@@ -6,11 +6,11 @@
                 <div class="form-group">
                     <label>Group Name</label>
                     <input v-model="groupName" type="text" placeholder="Name" required>
-                </div>  
-            <div>
-                <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
-                <button type="submit">Submit</button>
-            </div>
+                </div>
+                <div>
+                    <p v-if="msg" :class="{ 'success': !isError, 'error': isError }">{{ msg }}</p>
+                    <button type="submit">Submit</button>
+                </div>
             </form>
         </div>
     </div>
@@ -38,13 +38,14 @@ export default {
                 },
                 credentials: 'include',
                 body: JSON.stringify({ groupName: this.groupName }),
-            }); 
+            });
 
             const data = await res.json();
 
             if (res.ok) {
                 this.msg = data.message;
                 this.isError = false;
+                this.$emit('createGroup')
             } else {
                 this.msg = data.message
                 this.isError = true;
@@ -56,7 +57,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal {
     position: fixed;
     top: 50%;
@@ -68,11 +68,12 @@ export default {
     padding: 20px;
     background: white;
     border-radius: 10px;
-}   
+}
+
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -80,30 +81,30 @@ export default {
 }
 
 form {
-  width: 300px;
-  margin: 20px auto;
+    width: 300px;
+    margin: 20px auto;
 }
 
 label {
-  display: block;
-  margin: 20px 0 10px;
+    display: block;
+    margin: 20px 0 10px;
 }
 
 input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  outline: none;
-  margin: 10px auto;
-  
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    outline: none;
+    margin: 10px auto;
+
 }
 
 form h1 {
     display: block;
     text-align: center;
     padding-bottom: 10px;
-}   
+}
 
 form button {
     background-color: white;
@@ -124,7 +125,7 @@ form button:hover {
 }
 
 h1 {
-    width : 110%;
+    width: 110%;
 }
 
 .error {
@@ -141,9 +142,6 @@ h1 {
     .modal {
         width: 80%;
     }
-        
+
 }
-
-
 </style>
-

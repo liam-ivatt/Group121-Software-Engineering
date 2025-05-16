@@ -6,15 +6,15 @@
                 <div class="form-group">
                     <label>Email:</label>
                     <input type="email" v-model="email">
-                </div>  
+                </div>
                 <div class="form-group">
                     <label>Height (CM):</label>
                     <input type="number" v-model="height">
                 </div>
-            <div>
-                <p v-if="msg">{{ msg }}</p>
-                <button @click="handleSubmit">Submit</button>
-            </div>
+                <div>
+                    <p v-if="msg">{{ msg }}</p>
+                    <button @click="handleSubmit">Submit</button>
+                </div>
             </form>
         </div>
     </div>
@@ -44,29 +44,29 @@ export default {
             event.preventDefault();
             this.errData = '';
 
-                const res = await fetch('http://localhost:5000/update-profile', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ email: this.email, height: this.height, weight: this.weight })
-                });
-                if (res.ok) {
-                    this.msg = ''
-                    this.msg = 'Profile updated successfully!';
+            const res = await fetch('http://localhost:5000/update-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email: this.email, height: this.height, weight: this.weight })
+            });
+            if (res.ok) {
+                this.msg = ''
+                this.msg = 'Profile updated successfully!';
 
-                    //Save today's date as the logged date in localStorage
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    localStorage.setItem('weightLoggedDate', today.toISOString());
-                    this.closeModal();
+                //Save today's date as the logged date in localStorage
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                localStorage.setItem('weightLoggedDate', today.toISOString());
+                this.closeModal();
 
-                } else { 
-                    const errorData = await res.json();
-                    this.msg = errorData.message; 
-                }
-            },
+            } else {
+                const errorData = await res.json();
+                this.msg = errorData.message;
+            }
+        },
 
         async getUserData() {
 
@@ -95,7 +95,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal {
     position: fixed;
     top: 50%;
@@ -107,11 +106,12 @@ export default {
     padding: 20px;
     background: white;
     border-radius: 10px;
-}   
+}
+
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -119,22 +119,22 @@ export default {
 }
 
 form {
-width: 300px;
-margin: 20px auto;
+    width: 300px;
+    margin: 20px auto;
 }
 
 label {
-display: block;
-margin: 20px 0 10px;
+    display: block;
+    margin: 20px 0 10px;
 }
 
 input {
-width: 100%;
-padding: 10px;
-border-radius: 10px;
-border: 1px solid #eee;
-outline: none;
-margin: 10px auto;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    outline: none;
+    margin: 10px auto;
 
 }
 
@@ -142,7 +142,7 @@ form h1 {
     display: block;
     text-align: center;
     padding-bottom: 10px;
-}   
+}
 
 form button {
     background-color: white;
@@ -163,14 +163,10 @@ form button:hover {
 }
 
 @media screen and (max-width: 426px) {
-    
+
     .modal {
         width: 80%;
     }
- 
+
 }
-
-
-
 </style>
-

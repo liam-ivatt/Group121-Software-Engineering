@@ -24,7 +24,7 @@
                     </li>
                 </ul>
                 <p v-else>Loading members...</p>
-            </div> 
+            </div>
         </div>
     </div>
 </template>
@@ -62,9 +62,9 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         joinCode: this.group.joinCode,
-                        userEmail: this.userEmail 
+                        userEmail: this.userEmail
                     }),
                 });
 
@@ -135,7 +135,7 @@ export default {
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -161,7 +161,8 @@ form h1 {
     margin: 15px 0;
 }
 
-form select, input {
+form select,
+input {
     width: 60%;
     padding: 10px;
     border-radius: 10px;
@@ -220,7 +221,7 @@ form button:hover {
     background-color: #f8f8f8;
     border-radius: 6px;
     border-left: 4px solid #f7c8f3;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     align-items: center;
     display: flex;
     font-size: 16px;
@@ -248,11 +249,11 @@ form button:hover {
 }
 
 .modal::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .user-list::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .error {
@@ -274,49 +275,50 @@ form button:hover {
         width: 100%;
         margin: 10px auto;
     }
-    
+
     .form-group {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     form label {
         width: 100%;
         text-align: center;
         margin-bottom: 5px;
     }
-    
-    form select, input {
+
+    form select,
+    input {
         width: 80%;
     }
-    
+
     form button {
         margin: 0 auto;
     }
-    
+
     .user-list {
         width: 90%;
         padding: 15px;
     }
-    
+
     .user-list li {
         flex-direction: column;
         text-align: center;
         padding: 15px 10px;
     }
-    
+
     .delete {
         margin-top: 10px;
         padding: 8px 15px;
     }
-    
+
     h3 {
         text-align: center;
     }
-    
-    .error, .success {
+
+    .error,
+    .success {
         margin: 10px 0;
     }
 }
-
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
 <script>
@@ -29,21 +29,21 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
 
 html {
-  background-image: url('/src/assets/background.jpg'); 
-  background-size: cover; 
-  background-position: center; 
-  background-repeat: no-repeat; 
-  background-attachment: fixed;   
+  background-image: url('/src/assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 html::-webkit-scrollbar {
-  display: none;  
+  display: none;
 }
-
 </style>

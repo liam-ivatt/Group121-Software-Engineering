@@ -1,8 +1,8 @@
 <template>
     <Navigation />
-    <Notification v-if="showNotification"/>
-    <Dashboard @weightUpdated="handleWeightUpdate"/>
-    <Goals :currentWeight="currentWeight"/>
+    <Notification v-if="showNotification" />
+    <Dashboard @weightUpdated="handleWeightUpdate" />
+    <Goals :currentWeight="currentWeight" />
     <Foods />
     <Exercises />
 </template>
@@ -17,23 +17,23 @@ import Notification from '../components/Notification.vue'
 import Dashboard from '../components/Dashboard.vue'
 
 export default {
- components: {
-    Navigation,
-    Goals,
-    Foods,
-    Exercises,
-    Notification,
-    Dashboard,
- },
- methods: {
-    toggleModal() {
+    components: {
+        Navigation,
+        Goals,
+        Foods,
+        Exercises,
+        Notification,
+        Dashboard,
+    },
+    methods: {
+        toggleModal() {
             this.showModal = !this.showModal
         },
         async getUserData() {
             try {
                 const res = await fetch('http://localhost:5000/user', {
                     method: 'GET',
-                    credentials: 'include',  
+                    credentials: 'include',
                 });
                 if (res.ok) {
                     const data = await res.json();
@@ -42,15 +42,15 @@ export default {
 
                     if (data.weightHistory) {
                         this.data = {
-                        labels: data.weightHistory.map(entry => new Date(entry.date).toLocaleDateString()),
-                        datasets: [
-                            {
-                                label: 'Weight History',
-                                data: data.weightHistory.map(entry => entry.weight)
-                            }
+                            labels: data.weightHistory.map(entry => new Date(entry.date).toLocaleDateString()),
+                            datasets: [
+                                {
+                                    label: 'Weight History',
+                                    data: data.weightHistory.map(entry => entry.weight)
+                                }
                             ]
                         };
-                    } 
+                    }
                     this.checkDay();
                 }
             } catch (error) {
@@ -68,34 +68,34 @@ export default {
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
 
-            if (weightLoggedDate && new Date (weightLoggedDate).getTime() === today.getTime()){
+            if (weightLoggedDate && new Date(weightLoggedDate).getTime() === today.getTime()) {
                 console.log("Weight already logged for today.");
                 this.showNotification = false;
                 return;
             }
 
-            if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0){
-            const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
-                
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
-            const targetDate = new Date(activeGoal.targetDate);
-            targetDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
-            console.log("Target date: " + targetDate);
-            console.log("Today: " + today);
+            if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0) {
+                const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
 
-            if (targetDate > today){
-                if (activeGoal.targetWeight >= this.userData.weight){
-                    console.log("You have reached your goal!");
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+                const targetDate = new Date(activeGoal.targetDate);
+                targetDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+                console.log("Target date: " + targetDate);
+                console.log("Today: " + today);
+
+                if (targetDate > today) {
+                    if (activeGoal.targetWeight >= this.userData.weight) {
+                        console.log("You have reached your goal!");
+                    } else {
+                        console.log("You have not reached your goal yet.");
+                        this.showNotification = true;
+
+                    }
                 } else {
-                    console.log("You have not reached your goal yet.");
-                    this.showNotification = true;
-
+                    console.log("You have not reached your goal in time.");
                 }
-            } else {
-                console.log("You have not reached your goal in time.");
-            }
-                    
+
             } else {
                 this.showNotification = false;
             }
@@ -106,13 +106,13 @@ export default {
         },
     },
 
-  data() {
-    return {
-      showModal: false,
-      showNotification: false,
-      currentWeight: null,
-    }
-  },
+    data() {
+        return {
+            showModal: false,
+            showNotification: false,
+            currentWeight: null,
+        }
+    },
     created() {
         this.getUserData();
     },
@@ -121,13 +121,13 @@ export default {
 </script>
 
 <style scoped>
-
 .dashboard {
     padding: 20px;
     background-color: white;
     width: 50%;
     margin: 0 auto;
-    margin-bottom: 20px;;
+    margin-bottom: 20px;
+    ;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -136,13 +136,12 @@ export default {
     text-align: left;
 }
 
-@media only screen and (orientation: portrait){
-  .dashboard{
-    float: none;
-    margin: 0 auto;
-    width: 85%;
-    margin-bottom: 5px;
-   }
-  }
-
+@media only screen and (orientation: portrait) {
+    .dashboard {
+        float: none;
+        margin: 0 auto;
+        width: 85%;
+        margin-bottom: 5px;
+    }
+}
 </style>

@@ -7,33 +7,34 @@
         <button class="profile" @click="toggleModal">Profile</button>
         <button class="logout" @click="handleLogout">Log Out</button>
     </div>
-    
+
 </template>
 
 <script>
 import Modal from './Modal.vue'
 
 export default {
-  components: { Modal,
-  },
-  data() {
-    return {
-      showModal: false,
-      firstName: "",
-    }
-  },
-  created() {
-    this.getUserData();
-  },
-  methods: {
+    components: {
+        Modal,
+    },
+    data() {
+        return {
+            showModal: false,
+            firstName: "",
+        }
+    },
+    created() {
+        this.getUserData();
+    },
+    methods: {
         toggleModal() {
             this.showModal = !this.showModal
         },
         async handleLogout() {
-            const res = await fetch('http://localhost:5000/logout', { 
+            const res = await fetch('http://localhost:5000/logout', {
                 method: 'POST',
                 credentials: 'include'
-             });
+            });
             if (res.ok) {
                 this.$router.push('/welcome')
             }
@@ -42,7 +43,7 @@ export default {
             try {
                 const response = await fetch('http://localhost:5000/user', {
                     method: 'GET',
-                    credentials: 'include',  
+                    credentials: 'include',
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -60,7 +61,6 @@ export default {
 </script>
 
 <style scoped>
-
 .header {
     margin-right: auto;
 }
@@ -78,6 +78,7 @@ div {
     border-top-right-radius: 0px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
 .Home {
     background-color: white;
     border: 1px solid #c1c1c1;
@@ -153,11 +154,10 @@ div {
 }
 
 @media screen and (max-width: 426px) {
-    
+
     .mobile {
         display: block;
     }
- 
-}
 
+}
 </style>

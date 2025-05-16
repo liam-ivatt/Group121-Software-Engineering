@@ -5,10 +5,7 @@
             <div class="quickAddSection">
                 <h2>Quick Add</h2>
                 <div class="commonFoods">
-                    <button 
-                        v-for="(food, index) in commonFoods" 
-                        :key="index" 
-                        class="commonFoodBtn" 
+                    <button v-for="(food, index) in commonFoods" :key="index" class="commonFoodBtn"
                         @click="selectCommonFood(food)">
                         {{ food.name }} ({{ food.calories }} cal)
                     </button>
@@ -19,22 +16,13 @@
                 <form @submit.prevent="handleAddCustomFood">
                     <div class="formField">
                         <label for="foodName">Food Name</label>
-                        <input 
-                            type="text" 
-                            id="foodName" 
-                            v-model.trim="newFood.name" 
-                            placeholder="Enter food name" 
+                        <input type="text" id="foodName" v-model.trim="newFood.name" placeholder="Enter food name"
                             required>
                     </div>
                     <div class="formField">
                         <label for="calories">Calories</label>
-                        <input 
-                            type="number" 
-                            id="calories" 
-                            v-model.number="newFood.calories" 
-                            placeholder="Enter calories"
-                            min="0"
-                            required>
+                        <input type="number" id="calories" v-model.number="newFood.calories"
+                            placeholder="Enter calories" min="0" required>
                     </div>
                     <div class="messageArea">
                         <p v-if="message" :class="messageType">{{ message }}</p>
@@ -45,7 +33,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <div class="todayFoods">
                 <h2>Today's Foods</h2>
                 <div class="foodList">
@@ -125,12 +113,12 @@ export default {
                 if (response.ok) {
                     this.message = 'Food added successfully!';
                     this.messageType = 'success';
-                    
+
                     this.newFood.name = '';
                     this.newFood.calories = null;
-                    
+
                     await this.fetchTodayMeals();
-                    
+
                     this.$emit('foodUpdated');
                 } else {
                     const errorData = await response.json();
@@ -167,7 +155,7 @@ export default {
                     method: 'DELETE',
                     credentials: 'include'
                 });
-                
+
                 if (response.ok) {
                     await this.fetchTodayMeals();
                     this.$emit('foodUpdated');
@@ -189,7 +177,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
@@ -201,13 +189,13 @@ export default {
     max-height: 90vh;
     overflow-y: auto;
     width: 90%;
-    max-width: 600px; 
+    max-width: 600px;
     padding: 20px;
     background: white;
     border-radius: 10px;
     z-index: 1001;
-    box-sizing: border-box; 
-}   
+    box-sizing: border-box;
+}
 
 h1 {
     text-align: center;
@@ -218,13 +206,15 @@ h2 {
     margin: 10px 0;
 }
 
-.quickAddSection, .customAddSection, .todayFoods {
+.quickAddSection,
+.customAddSection,
+.todayFoods {
     margin-bottom: 15px;
     padding: 15px;
     border-radius: 8px;
     background-color: #f9f9f9;
-    box-sizing: border-box; 
-    width: 100%; 
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .commonFoods {
@@ -256,7 +246,7 @@ input {
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ddd;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .buttonGroup {
@@ -347,8 +337,8 @@ button:hover {
 }
 
 .modal {
-    -ms-overflow-style: none;  
-    scrollbar-width: none;  
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .foodList::-webkit-scrollbar {
@@ -356,8 +346,8 @@ button:hover {
 }
 
 .foodList {
-    -ms-overflow-style: none;  
-    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 form {

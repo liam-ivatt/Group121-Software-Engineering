@@ -7,17 +7,17 @@
                 <div class="form-group">
                     <label>Name</label>
                     <input v-model="goalName" type="text" placeholder="Name" required>
-                </div>  
+                </div>
                 <div class="form-group">
                     <label>Goal Weight (KG):</label>
                     <input v-model="targetWeight" type="number" placeholder="Weight" required>
                     <label>Acheivement Date:</label>
                     <input v-model="targetDate" type="date" placeholder="Date" required>
                 </div>
-            <div>
-                <p v-if="msg" >{{msg}}</p>
-                <button type="submit">Submit</button>
-            </div>
+                <div>
+                    <p v-if="msg">{{ msg }}</p>
+                    <button type="submit">Submit</button>
+                </div>
             </form>
 
             <div class="goal-list">
@@ -47,10 +47,10 @@ export default {
         }
     },
     props: {
-    currentWeight: {
-      type: Number,
-      default: null
-    }
+        currentWeight: {
+            type: Number,
+            default: null
+        }
     },
     methods: {
         async getUserData() {
@@ -63,38 +63,38 @@ export default {
                 const data = await res.json();
 
                 if (data.goalsHistory) {
-                        this.goals = data.goalsHistory.map(goal => {
-                            return {
-                                id: goal._id,
-                                goalName: goal.goalName,
-                                targetWeight: goal.targetWeight,
-                                targetDate: new Date(goal.targetDate).toLocaleDateString(),
-                            };
-                        });
-                console.log(data.goalsHistory);
-            } else {
-                console.error('Error fetching user data');
-            }
+                    this.goals = data.goalsHistory.map(goal => {
+                        return {
+                            id: goal._id,
+                            goalName: goal.goalName,
+                            targetWeight: goal.targetWeight,
+                            targetDate: new Date(goal.targetDate).toLocaleDateString(),
+                        };
+                    });
+                    console.log(data.goalsHistory);
+                } else {
+                    console.error('Error fetching user data');
+                }
             }
         },
 
-        async goalSubmission(){
-            try{
+        async goalSubmission() {
+            try {
                 const res = await fetch('http://localhost:5000/create-goal', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ goalName: this.goalName, targetWeight: this.targetWeight, targetDate: this.targetDate }),
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ goalName: this.goalName, targetWeight: this.targetWeight, targetDate: this.targetDate }),
                 });
 
-                if (!res.ok){
+                if (!res.ok) {
                     const errorData = await res.json();
                     this.msg = errorData.message;
-                } 
-                else{
-                    this.msg = ''; 
+                }
+                else {
+                    this.msg = '';
                     this.msg = "Goal created. Good luck!";
                     await this.getUserData();
 
@@ -120,14 +120,14 @@ export default {
             });
 
             if (res.ok) {
-                await this.getUserData(); 
+                await this.getUserData();
             } else {
                 console.error('Error deleting goal');
             }
         },
 
-        async goalSuggestion(){
-            try{
+        async goalSuggestion() {
+            try {
                 const res = await fetch('http://localhost:5000/suggest-goal', {
                     method: 'POST',
                     headers: {
@@ -145,9 +145,9 @@ export default {
                     this.targetWeight = suggestedG.targetWeight;
                     this.targetDate = suggestedG.targetDate;
 
-                } else { 
+                } else {
                     const errorData = await res.json();
-                    this.msg = errorData.message; 
+                    this.msg = errorData.message;
                 }
             } catch (error) {
                 console.error('Goal Suggestion Error:', error);
@@ -169,7 +169,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal {
     position: fixed;
     top: 50%;
@@ -182,10 +181,11 @@ export default {
     background: white;
     border-radius: 10px;
 }
+
 .backdrop {
     top: 0;
     position: fixed;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     inset: 0;
     width: 100%;
     height: 100%;
@@ -198,25 +198,25 @@ form {
 }
 
 label {
-  display: block;
-  margin: 20px 0 10px;
+    display: block;
+    margin: 20px 0 10px;
 }
 
 input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  outline: none;
-  margin: 10px auto;
-  
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    outline: none;
+    margin: 10px auto;
+
 }
 
 form h1 {
     display: block;
     text-align: center;
     padding-bottom: 10px;
-}   
+}
 
 form button {
     background-color: white;
@@ -257,7 +257,7 @@ form button:hover {
     background-color: #f8f8f8;
     border-radius: 6px;
     border-left: 4px solid #f7c8f3;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     align-items: center;
     display: flex;
     font-size: 16px;
@@ -266,11 +266,11 @@ form button:hover {
 }
 
 .modal::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .goal-list::-webkit-scrollbar {
-  display: none;  
+    display: none;
 }
 
 .add-goal {
@@ -290,55 +290,55 @@ form button:hover {
     .modal {
         width: 80%;
     }
-    
+
     form {
         width: 100%;
         margin: 10px auto;
     }
-    
+
     .form-group {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     form label {
         width: 100%;
         text-align: center;
         margin-bottom: 5px;
     }
-    
-    form select, input {
+
+    form select,
+    input {
         width: 80%;
     }
-    
+
     form button {
         margin: 0 auto;
     }
-    
+
     .goal-list {
         width: 90%;
         padding: 15px;
     }
-    
+
     .goal-list li {
         flex-direction: column;
         text-align: center;
         padding: 15px 10px;
     }
-    
+
     .delete {
         margin-top: 10px;
         padding: 8px 15px;
     }
-    
+
     h3 {
         text-align: center;
     }
-    
-    .error, .success {
+
+    .error,
+    .success {
         margin: 10px 0;
     }
 }
-
 </style>
-

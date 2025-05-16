@@ -1,23 +1,21 @@
 <template>
     <Navigation />
-    <CreateGroupModal v-if="showCreateModal" @close="toggleCreateModal" />
-    <ManageGroupModal v-if="showManageModal" @close="toggleManageModal"
-    @removeUser="getGroups"
-    :group="selectedGroup"/>
-    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" 
-    @leaveGroup="getGroups"
-    :group="selectedGroup"/>
+    <CreateGroupModal v-if="showCreateModal" @close="toggleCreateModal" @createGroup="getGroups" />
+    <ManageGroupModal v-if="showManageModal" @close="toggleManageModal" @removeUser="getGroups" @removeGroup="getGroups"
+        :group="selectedGroup" />
+    <ManageUserModal v-if="showUserModal" @close="toggleManageUserModal" @leaveGroup="getGroups"
+        :group="selectedGroup" />
     <div class="group">
         <div class="group-header">
             <h1>Your Groups</h1>
             <div class="input-button-wrapper">
                 <p v-if="joinErr" class="error">{{ joinErr }}</p>
-                <input v-model="joinCode" type="text" placeholder="Join a group with code"/>
+                <input v-model="joinCode" type="text" placeholder="Join a group with code" />
                 <button class="new-group" @click="joinGroup">Join</button>
                 <button class="new-group" @click="toggleCreateModal">Create Group</button>
             </div>
         </div>
-        <div v-if="groups.length > 0" class="group-list">   
+        <div v-if="groups.length > 0" class="group-list">
             <ul>
                 <li v-for="(group, index) in groups" :key="index">
                     <h3>{{ group.name }}</h3>
@@ -99,7 +97,7 @@ export default {
                 });
 
                 console.log(this.groups);
-            
+
             } else {
                 console.error("Error fetching groups");
             }
@@ -135,7 +133,7 @@ export default {
 <style scoped>
 .group {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     padding: 20px;
     background-color: white;
     width: 70%;
@@ -147,10 +145,10 @@ export default {
 
 .group-header {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
 }
 
 .input-button-wrapper {
@@ -160,7 +158,7 @@ export default {
 }
 
 h1 {
-    margin: 0; 
+    margin: 0;
 }
 
 .new-group {
@@ -186,8 +184,8 @@ h1 {
 }
 
 ul {
-    list-style-type: none; 
-    padding: 0; 
+    list-style-type: none;
+    padding: 0;
 }
 
 input {
@@ -196,7 +194,7 @@ input {
     border-radius: 10px;
     padding: 15px 20px;
     text-decoration: none;
-    font-size: 15px; 
+    font-size: 15px;
 }
 
 .group-list {
@@ -251,73 +249,72 @@ input {
         width: 90%;
         padding: 15px;
     }
-    
+
     .group-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
     }
-    
+
     .input-button-wrapper {
         flex-direction: column;
         width: 100%;
         align-items: stretch;
     }
-    
+
     .input-button-wrapper input {
         width: 100%;
         box-sizing: border-box;
         margin-bottom: 10px;
     }
-    
+
     .input-button-wrapper button {
         width: 100%;
         margin-bottom: 10px;
     }
-    
+
     .group-list {
         padding: 10px;
         max-height: 400px;
     }
-    
+
     .group-list ul {
         grid-template-columns: 1fr;
     }
-    
+
     .group-list li {
         padding: 12px;
         margin-bottom: 10px;
     }
-    
+
     .group-list h3 {
         font-size: 16px;
     }
-    
+
     .group-list p {
         font-size: 14px;
     }
-    
+
     .group-list button {
         padding: 10px 15px;
         font-size: 14px;
     }
-    
+
     .new-group {
         padding: 12px 15px;
         font-size: 14px;
     }
-    
+
     h1 {
         font-size: 22px;
         width: 100%;
         text-align: center;
     }
-    
+
     .error {
         width: 100%;
         text-align: center;
         margin-bottom: 10px;
     }
 }
-
 </style>
