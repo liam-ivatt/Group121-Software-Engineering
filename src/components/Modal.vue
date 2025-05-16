@@ -57,12 +57,6 @@ export default {
                 this.msg = 'Profile updated successfully!';
                 this.isError = false;
 
-                //Save today's date as the logged date in localStorage
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                localStorage.setItem('weightLoggedDate', today.toISOString());
-                this.closeModal();
-
             } else {
                 const errorData = await res.json();
                 this.isError = true;

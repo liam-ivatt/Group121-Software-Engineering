@@ -138,6 +138,7 @@ export default {
                 this.isError = false;
                 this.$emit("setWeight")
                 this.$emit("weightUpdated", this.weight);
+
             } else {
                 this.isError = true;
                 this.msg = data.message

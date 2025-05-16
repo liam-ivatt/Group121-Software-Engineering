@@ -1,8 +1,7 @@
 <template>
     <WeightModal v-if="showModal" @close="toggleModal" />
-    <div>
-        <h1 class="header">Log your weight for today!</h1>
-        <button class="profile" @click="toggleModal">Log Weight</button>
+    <div :style="{ backgroundColor: notificationColor }" class="notification">
+        <h1 class="header">{{notificationMessage}}</h1>
     </div>
 
 </template>
@@ -11,8 +10,16 @@
 import WeightModal from '../components/WeightModal.vue'
 
 export default {
-    components: {
-        WeightModal,
+    components: { WeightModal },
+    props: {
+      notificationColor: {
+        type: String,
+        default: 'red'
+      },
+      notificationMessage: {
+        type: String,
+        default: 'Log your weight for today!'
+      }
     },
     data() {
         return {

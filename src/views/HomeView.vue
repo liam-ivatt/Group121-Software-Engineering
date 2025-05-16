@@ -1,6 +1,6 @@
 <template>
     <Navigation />
-    <Notification v-if="showNotification" />
+    <Notification v-if="showNotification" :notificationColor="notificationColor" :notificationMessage="notificationMessage"/>
     <Dashboard @weightUpdated="handleWeightUpdate" />
     <Goals :currentWeight="currentWeight" />
     <Foods />
@@ -58,21 +58,34 @@ export default {
             }
         },
 
-        checkDay() {
+        async updateGoalStatus() {
+            try {
+                const res = await fetch('http://localhost:5000/update-goal-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ userId: this.userData._id }) // Send userId
+                });
+                if (res.ok) {
+                    this.userData.goalCurrentlyActive = 0;
+                    console.log("Goal set to inactive");
+                } else {
+                    console.error('Failed to set goal inactive');
+                }
+            } catch (error) {
+                console.error('Error setting goal inactive:', error);
+            }
+        },
+
+        async checkDay() {
             if (!this.userData) {
                 return;
             }
 
-            const weightLoggedDate = localStorage.getItem('weightLoggedDate');
-
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
-
-            if (weightLoggedDate && new Date(weightLoggedDate).getTime() === today.getTime()) {
-                console.log("Weight already logged for today.");
-                this.showNotification = false;
-                return;
-            }
 
             if (this.userData.goalCurrentlyActive == 1 && this.userData.goalsHistory.length > 0) {
                 const activeGoal = this.userData.goalsHistory[this.userData.goalsHistory.length - 1];
@@ -84,16 +97,32 @@ export default {
                 console.log("Target date: " + targetDate);
                 console.log("Today: " + today);
 
+                const latestWeightDate = this.userData.weightHistory[this.userData.weightHistory.length - 1];
+                const weightDate = new Date(latestWeightDate.date);
+                weightDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+
+                if (weightDate.getTime() === today.getTime() && !(activeGoal.targetWeight >= this.userData.weight)) {
+                    console.log("Weight already logged for today.");
+                    this.showNotification = false;
+                    return;
+                }
+
                 if (targetDate > today) {
                     if (activeGoal.targetWeight >= this.userData.weight) {
-                        console.log("You have reached your goal!");
-                    } else {
-                        console.log("You have not reached your goal yet.");
                         this.showNotification = true;
-
+                        this.notificationColor = "green";
+                        this.notificationMessage = 'Congratulations, you have reached your goal!';
+                        await this.updateGoalStatus();
+                    } else {
+                        this.showNotification = true;
+                        this.notificationColor = "orange";
+                        this.notificationMessage = 'Log your weight for today!';
                     }
                 } else {
-                    console.log("You have not reached your goal in time.");
+                    this.showNotification = true;
+                    this.notificationColor = "red";
+                    this.notificationMessage = 'Your goal has expired, please set a new one!';
+                    await this.updateGoalStatus();
                 }
 
             } else {
@@ -110,6 +139,8 @@ export default {
         return {
             showModal: false,
             showNotification: false,
+            notificationColor: 'orange',
+            notificationMessage: 'Log your weight for today!',
             currentWeight: null,
         }
     },
