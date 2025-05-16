@@ -109,7 +109,7 @@ div {
     text-decoration: none;
     font-size: 15px;
     transition-duration: 0.4s;
-    margin: 5px;
+    margin-left: 10px;
 }
 
 .logout:hover {

@@ -12,8 +12,9 @@
         <div class="chart-container">
             <Line :data="data" :options="options" :height="200"/>
         </div>
-        <h1>BMI</h1>
-        <p>Your BMI is currently {{ bmi }}</p>
+        <h3>BMI</h3>
+        <p>Your BMI is currently {{ bmi }}, which is classified as being {{ classification }}</p>
+        <p>{{ recommendedBMI }}</p>
     </div>
 </template>
 
@@ -79,6 +80,49 @@ export default {
                 console.error('Error:', error);
             }
         },
+        bmiClassification(bmi) {
+
+          console.log("test", bmi)
+
+          switch (true) {
+            case bmi < 18.5:
+              this.classification = 'Underweight';
+              break;
+            case bmi >= 18.5 && bmi < 25:
+              this.classification = 'Normal Weight';
+              break;
+            case bmi >= 25 && bmi < 30:
+              this.classification = 'Overweight';
+              break;
+            case bmi >= 30:
+              this.classification = 'Obese';
+              break;
+            default:
+              this.classification = 'Unknown';
+          }
+
+          switch (this.classification) {
+            case 'Underweight':
+              this.recommendedBMI = `You need to gain ${(18.5 - bmi).toFixed(1)} BMI points to reach Normal Weight`;
+              break;
+            case 'Normal Weight':
+              if (bmi < 21.75) {
+                this.recommendedBMI = `You are ${(25 - bmi).toFixed(1)} BMI points away from being Overweight`;
+              } else {
+                this.recommendedBMI = `You are ${(bmi - 18.5).toFixed(1)} BMI points above being Underweight`;
+              }
+              break;
+            case 'Overweight':
+              this.recommendedBMI = `You need to lose ${(bmi - 24.9).toFixed(1)} BMI points to reach Normal Weight`;
+              break;
+            case 'Obese':
+              this.recommendedBMI = `You need to lose ${(bmi - 29.9).toFixed(1)} BMI points to reach Overweight`;
+              break;
+            default:
+              this.recommendedBMI = 'Unable to calculate BMI recommendation';
+          }
+          
+        },
         handleWeightUpdate(newWeight) {
 
             this.$emit('weightUpdated', newWeight);
@@ -89,6 +133,8 @@ export default {
     return {
       showModal: false,
       bmi: "",
+      classification: '',
+      recommendedBMI: '',
       data: {
         labels: [],
         datasets: [
@@ -114,8 +160,9 @@ export default {
     }
   },
   emits: ['weightUpdated'],
-    created() {
-        this.getUserData();
+    async created() {
+        await this.getUserData();
+        this.bmiClassification(this.bmi);
     },
 }
 
@@ -134,7 +181,13 @@ export default {
 }
 
 .dashboard h1 {
-    text-align: left;
+    text-align: center;
+}
+
+h3 {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
 
 .dashboard-header {
