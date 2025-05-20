@@ -17,7 +17,8 @@
                 <ul v-if="weights && weights.length">
                     <li v-for="(weight, index) in weights" :key="index">
                         {{ weight.weight }}kg, {{ weight.date }}
-                        <button class="delete" @click="deleteWeight(weight.id)">Delete</button>
+                        <button v-if="index === 0" class="delete" disabled >Delete</button>
+                        <button v-else class="delete" @click="deleteWeight(weight.id)">Delete</button>
                     </li>
                 </ul>
                 <p v-else>Loading members...</p>

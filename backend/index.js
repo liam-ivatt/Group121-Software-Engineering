@@ -690,6 +690,15 @@ app.post("/set-weight", async (req, res) => {
 app.delete("/delete-weight", async (req, res) => {
   const { id } = req.body;
 
+  const user = await User.findById(req.session.userId);
+
+  // Check if this is the only weight entry
+  if (user.weightHistory.length <= 1) {
+    return res.status(400).json({
+      message: "Cannot delete the only weight entry"
+    });
+  }
+
   await User.findByIdAndUpdate(
     req.session.userId,
     { $pull: { weightHistory: { _id: id } } },
